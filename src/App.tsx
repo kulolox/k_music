@@ -1,23 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from './store/rootReducer';
+import { increment, decrement } from './store/counterSlice';
 import './App.css';
 
-function App() {
+function App(): JSX.Element {
+  const counter = useSelector((state: RootState) => state.counter);
+  const dispatch = useDispatch();
+
+  const incrementAction = useCallback(() => {
+    dispatch(increment());
+  }, [dispatch]);
+
+  const decrementAction = useCallback(() => {
+    dispatch(decrement());
+  }, [dispatch]);
+
+  console.log('counter:', counter);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div className='App'>
+      <header className='App-header'>
+        <button onClick={incrementAction}>increment</button>
+        <button onClick={decrementAction}>decrement</button>
+        <p>{counter}</p>
       </header>
     </div>
   );

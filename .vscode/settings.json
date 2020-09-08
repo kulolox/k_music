@@ -1,0 +1,17 @@
+{
+  "editor.wordWrap": "on",
+  "explorer.confirmDelete": false,
+  "editor.renderIndentGuides": false,
+  "editor.stablePeek": true,
+  "editor.detectIndentation": false,
+  "editor.renderControlCharacters": false,
+  "diffEditor.renderSideBySide": true,
+  "workbench.settings.editor": "json",
+  "editor.formatOnSave": true,
+  "emmet.triggerExpansionOnTab": true,
+  "explorer.confirmDragAndDrop": false,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
+}
