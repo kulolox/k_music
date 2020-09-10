@@ -16,7 +16,7 @@ export default (): JSX.Element => {
     }
   ]);
   useEffect(() => {
-    async function fetchData() {
+    async function fetchData(): Promise<void> {
       const { data } = await getBanner(0);
       console.log('data:', data);
       setBanner(

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosRequestConfig } from 'axios';
 import config from './config';
 
@@ -30,13 +29,16 @@ request.interceptors.request.use(
   config => {
     removePending(config);
     config.cancelToken = new cancelToken(c => {
-      pending.push({ url: config.url + '&request_type=' + config.method, cancel: c });
+      pending.push({
+        url: config.url + '&request_type=' + config.method,
+        cancel: c,
+      });
     });
     return config;
   },
   error => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // 返回状态判断(添加响应拦截器)
@@ -47,7 +49,7 @@ request.interceptors.response.use(
   },
   error => {
     return Promise.reject(error);
-  }
+  },
 );
 
 export default request;

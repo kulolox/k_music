@@ -6,7 +6,7 @@ const axiosConfig: AxiosRequestConfig = {
   transformResponse: [
     function (data: AxiosResponse): AxiosResponse {
       return data;
-    }
+    },
   ],
   timeout: 30000,
   responseType: 'json',
@@ -15,7 +15,7 @@ const axiosConfig: AxiosRequestConfig = {
   // 自定义错误状态码范围
   validateStatus: function (status: number) {
     return status >= 200 && status < 300;
-  }
+  },
 };
 
 export default axiosConfig;

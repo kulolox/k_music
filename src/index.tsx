@@ -6,13 +6,13 @@ import * as serviceWorker from './serviceWorker';
 import store from './store';
 import './index.css';
 
-const render = () => {
+const render = (): void => {
   const App = require('./App').default;
   ReactDOM.render(
     <Provider store={store}>
       <App />
     </Provider>,
-    document.getElementById('root')
+    document.getElementById('root'),
   );
 };
 

@@ -7,9 +7,9 @@ const Home = React.lazy(() => import('@pages/home'));
 function App(): JSX.Element {
   return (
     <Router>
-      <React.Suspense fallback='加载中...'>
+      <React.Suspense fallback="加载中...">
         <Switch>
-          <Route path='/' exact component={Home} />
+          <Route path="/" exact component={Home} />
         </Switch>
       </React.Suspense>
     </Router>
