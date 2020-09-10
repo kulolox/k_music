@@ -1,9 +1,10 @@
 # 酷音乐
 
-音乐网站，主要用于练习 Typescript。
+音乐网站，RE:从零开始的 TYPESCRIPT 程序猿生活【括弧ヾ(≧▽≦\*)o】。
 
 ## 前端技术栈：
 
+- typescript 本项目的重点，学习及练习 ts，完全新手，大佬可以忽略
 - react 主要使用 react hooks
 - redux 状态管理使用了 redux，并使用了@reduxjs/toolkit 工具包
 - antd design UI 框架使用了 antd design
