@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Carousel } from 'antd';
 import { getBanner } from '@/api';
+
 import styles from './index.module.less';
 
 interface Banner {
@@ -12,8 +13,8 @@ export default (): JSX.Element => {
   const [banners, setBanner] = useState([
     {
       scm: '',
-      imageUrl: ''
-    }
+      imageUrl: '',
+    },
   ]);
   useEffect(() => {
     async function fetchData(): Promise<void> {
@@ -22,19 +23,19 @@ export default (): JSX.Element => {
       setBanner(
         data.banners.map((t: Banner) => ({
           scm: t.scm,
-          imageUrl: t.imageUrl
-        }))
+          imageUrl: t.imageUrl,
+        })),
       );
     }
     fetchData();
   }, [setBanner]);
   return (
     <div className={styles.home}>
-      <div>
+      <div className={styles.banner}>
         <Carousel autoplay>
           {(banners as Array<Banner>).map(banner => (
             <div key={banner.scm} className={styles.item}>
-              <img src={banner.imageUrl} alt='' />
+              <img src={banner.imageUrl} alt="" />
             </div>
           ))}
         </Carousel>

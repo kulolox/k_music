@@ -7,8 +7,8 @@
 - typescript 本项目的重点，学习及练习 ts，完全新手，大佬可以忽略
 - react 主要使用 react hooks
 - redux 状态管理使用了 redux，并使用了@reduxjs/toolkit 工具包
-- antd design UI 框架使用了 antd design
-- less antd design 使用的为 less 预处理语言，为了统一我使用的也是 less
+- ant-design UI 框架使用了 antd design
+- less ant-design 使用的为 less 预处理语言，为了统一我使用的也是 less
 
 ## 后端技术栈
 
