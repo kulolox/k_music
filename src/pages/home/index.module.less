@@ -1,4 +1,55 @@
 .home {
-  width: 1000px;
+  width: 980px;
   margin: 0 auto;
+  .banner {
+    display: none;
+  }
+  .list {
+    padding: 24px 0 64px;
+    display: flex;
+    flex-wrap: wrap;
+    .album {
+      width: 20%;
+      padding: 8px;
+      box-sizing: border-box;
+      &:hover {
+        padding: 8px;
+        color: red;
+      }
+      .cover {
+        position: relative;
+        border-radius: 4px;
+        img {
+          width: 100%;
+          display: block;
+        }
+      }
+      .playCount {
+        position: absolute;
+        right: 0;
+        top: 0;
+        padding: 2px 12px;
+        background: linear-gradient(to left, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
+        color: #fff;
+      }
+      .creatorName {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 24px;
+        line-height: 24px;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.4));
+        padding: 0 8px;
+        color: #fff;
+      }
+      .name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #333;
+        padding: 2px 2px 2px 4px;
+      }
+    }
+  }
 }
