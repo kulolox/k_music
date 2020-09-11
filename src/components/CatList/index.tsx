@@ -6,7 +6,10 @@ import styles from './index.module.less';
 interface Iprops {
   catList: ICatList[];
   onSelect: Function;
+  selectedCat: string;
 }
+
+const { CheckableTag } = Tag;
 
 const CatList = (props: Iprops) => {
   return (
@@ -16,9 +19,14 @@ const CatList = (props: Iprops) => {
           <div className={styles.catType}>{cat.typeName}</div>
           <div className={styles.catContent}>
             {cat.list.map((t: { name: string }) => (
-              <Tag key={t.name} className={styles.tag} onClick={() => props.onSelect(t.name)}>
+              <CheckableTag
+                key={t.name}
+                className={styles.tag}
+                checked={props.selectedCat === t.name}
+                onClick={() => props.onSelect(t.name)}
+              >
                 {t.name}
-              </Tag>
+              </CheckableTag>
             ))}
           </div>
         </div>
