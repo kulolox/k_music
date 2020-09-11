@@ -148,7 +148,7 @@ export default (): JSX.Element => {
         </div>
         <div className={styles.list}>
           {albumList.map(album => (
-            <Link key={album.id} className={styles.album} to={`/playlist/${album.id}`}>
+            <Link key={album.id} className={styles.album} to={`/album/${album.id}`}>
               <div className="hoverBox">
                 <div className={styles.cover}>
                   <LazyImage src={album.coverImgUrl} width="100%" height="auto" />

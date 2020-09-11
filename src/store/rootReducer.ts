@@ -1,8 +1,8 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import counterReducer from './counterSlice';
+import albumReducer from './albumSlice';
 
 const rootReducer = combineReducers({
-  counter: counterReducer,
+  album: albumReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

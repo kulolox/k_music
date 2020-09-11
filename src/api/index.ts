@@ -52,7 +52,15 @@ function getAlbumDetail(id: string): Promise<AxiosResponse> {
  * @param {string} id
  */
 function getSongList(ids: string): Promise<AxiosResponse> {
-  return request.get(`${baseUrl}/song/url?id=${ids}`);
+  return request.get(`${baseUrl}/song/detail?ids=${ids}`);
 }
 
-export { getBanner, getCatlist, getHotCatlist, getAlbumList, getAlbumDetail, getSongList };
+/**
+ * 获取歌曲播放链接
+ * @param {string} id
+ */
+function getSongUrl(id: string): Promise<AxiosResponse> {
+  return request.get(`${baseUrl}/song/url?id=${id}`);
+}
+
+export { getBanner, getCatlist, getHotCatlist, getAlbumList, getAlbumDetail, getSongList, getSongUrl };
