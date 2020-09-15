@@ -8,7 +8,7 @@ const middleware = [...getDefaultMiddleware(), logger];
 const store = configureStore({
   reducer: rootReducer,
   devTools: process.env.NODE_ENV !== 'production',
-  middleware,
+  middleware: process.env.NODE_ENV !== 'production' ? middleware : [],
 });
 
 if (process.env.NODE_ENV === 'development' && module.hot) {
