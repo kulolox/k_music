@@ -13,7 +13,7 @@ import styles from './index.module.less';
 const ListButton = () => {
   const { list, playing, currentIndex } = useSelector((state: RootState) => state.player);
   const dispatch = useDispatch();
-  const [showContainer, setShowContainer] = useState(true);
+  const [showContainer, setShowContainer] = useState(false);
   const [lyric, setLyric] = useState('');
   const toggleContainer = useCallback(val => {
     setShowContainer(val);
