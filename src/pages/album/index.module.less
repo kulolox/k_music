@@ -1,8 +1,10 @@
 .album {
   width: 980px;
   margin: 0 auto;
+  padding: 24px 0 50px;
   .head {
     display: flex;
+    align-items: flex-start;
     .logo {
       border: 1px solid #dcdcdc;
       padding: 4px;
@@ -28,6 +30,42 @@
       }
     }
   }
-  .list {
+  .listBox {
+    .title {
+      font-weight: bold;
+      font-size: 24px;
+      margin: 16px 0;
+    }
+    .item {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .index {
+        width: 60px;
+        text-align: center;
+        margin-right: 16px;
+      }
+      .main {
+        flex: 1;
+        .songName {
+          font-size: 16px;
+          color: #333;
+          margin-bottom: 4px;
+        }
+        .songCreator {
+          font-size: 12px;
+          color: #999;
+        }
+      }
+      .second {
+        padding: 0 16px;
+      }
+      .canPlaying {
+        width: 80px;
+        padding: 0 16px;
+        text-align: right;
+      }
+    }
   }
 }

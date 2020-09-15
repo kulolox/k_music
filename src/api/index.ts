@@ -63,4 +63,12 @@ function getSongUrl(id: string): Promise<AxiosResponse> {
   return request.get(`${baseUrl}/song/url?id=${id}`);
 }
 
-export { getBanner, getCatlist, getHotCatlist, getAlbumList, getAlbumDetail, getSongList, getSongUrl };
+/**
+ * 获取歌曲歌词
+ * @param {string} id
+ */
+function getSongLyric(id: string): Promise<AxiosResponse> {
+  return request.get(`${baseUrl}/lyric?id=${id}`);
+}
+
+export { getBanner, getCatlist, getHotCatlist, getAlbumList, getAlbumDetail, getSongList, getSongUrl, getSongLyric };

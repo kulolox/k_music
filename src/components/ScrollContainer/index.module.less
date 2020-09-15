@@ -1,0 +1,27 @@
+.container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.scrollContent {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 17px;
+  box-sizing: content-box;
+}
+.scrollBar {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  width: 6px;
+  border-radius: 4px;
+  span {
+    position: absolute;
+    border-radius: 4px;
+    width: 100%;
+    background-color: #555;
+  }
+}

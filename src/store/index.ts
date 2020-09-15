@@ -1,9 +1,14 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import logger from 'redux-logger';
 import { useDispatch } from 'react-redux';
 import rootReducer from './rootReducer';
 
+const middleware = [...getDefaultMiddleware(), logger];
+
 const store = configureStore({
   reducer: rootReducer,
+  devTools: process.env.NODE_ENV !== 'production',
+  middleware,
 });
 
 if (process.env.NODE_ENV === 'development' && module.hot) {
