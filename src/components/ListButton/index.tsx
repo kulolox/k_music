@@ -27,7 +27,10 @@ const ListButton = () => {
       const id = list[currentIndex]?.id;
       if (id) {
         const result = await getSongLyric(id);
-        setLyric(result.data.lrc.lyric);
+        console.log('result:', result);
+        if (result.data.lyr) {
+          setLyric(result.data.lrc.lyric);
+        }
       }
     };
     fetch();
