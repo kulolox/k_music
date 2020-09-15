@@ -22,7 +22,6 @@ const parseLyric = (lyricStr: string) => {
     const line = lines[i];
     let result: any = timeExp.exec(line);
     if (result) {
-      console.log('result:', result);
       // 去掉时间，留下歌词部分
       const txt = line.replace(timeExp, '').trim();
       if (txt) {
