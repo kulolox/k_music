@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Button } from 'antd';
+import { Button, Badge } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import IconFont from '@components/IconFont';
 import ScrollContainer from '@components/ScrollContainer';
@@ -38,7 +38,13 @@ const ListButton = () => {
   }, [currentIndex]);
   return (
     <div className={styles.list}>
-      <Button onClick={() => toggleContainer(!showContainer)} type="text" icon={<IconFont type="icon-music-list" />} />
+      <Badge count={list.length} overflowCount={99} size="small" offset={[5, 0]}>
+        <Button
+          onClick={() => toggleContainer(!showContainer)}
+          type="text"
+          icon={<IconFont type="icon-music-list" />}
+        />
+      </Badge>
       {showContainer && (
         <div className={styles.container}>
           <div className={styles.backImg} style={{ backgroundImage: `url('${list[currentIndex].coverImgUrl}')` }} />

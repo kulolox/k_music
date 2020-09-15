@@ -1,6 +1,7 @@
 import React, { useCallback, useRef, useMemo, useState } from 'react';
 import { Button, Avatar, Slider } from 'antd';
 import ReactPlayer from 'react-player';
+import classNames from 'classnames';
 import IconFont from '@components/IconFont';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/rootReducer';
@@ -102,7 +103,10 @@ const Player = () => {
           </div>
         </div>
         <div className={styles.main}>
-          <Avatar className={styles.coverImage} src={list[currentIndex]?.coverImgUrl ?? DEFAULT_COVER_IMAGE} />
+          <Avatar
+            className={classNames(styles.coverImage, { [styles.spin]: playing })}
+            src={list[currentIndex]?.coverImgUrl ?? DEFAULT_COVER_IMAGE}
+          />
           <div className={styles.content}>
             <div className={styles.head}>
               <div>{list[currentIndex]?.name ?? '暂无'}</div>

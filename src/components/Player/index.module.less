@@ -1,3 +1,4 @@
+@import '~@/css/animation.less';
 .player {
   height: 50px;
   .reactPlayer {
@@ -12,6 +13,16 @@
       align-items: center;
       .button {
         padding: 0 8px;
+        :global {
+          .ant-btn-ghost[disabled],
+          .ant-btn-ghost[disabled]:hover,
+          .ant-btn-ghost[disabled]:focus,
+          .ant-btn-ghost[disabled]:active {
+            opacity: 0.6;
+            color: #fff;
+            background: transparent;
+          }
+        }
         svg {
           color: #fff;
         }
@@ -35,6 +46,9 @@
       .coverImage {
         margin-right: 8px;
         background: #dcdcdc;
+      }
+      .spin {
+        animation: rotate 2s linear infinite;
       }
       .content {
         flex: 1;
