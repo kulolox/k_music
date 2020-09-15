@@ -13,6 +13,8 @@ interface ILyric {
 
 const timeExp = /\[(\d{2}):(\d{2}\.\d{1,3})\]/g;
 
+const BASELINE = 180;
+
 // 解析歌词
 const parseLyric = (lyricStr: string) => {
   if (!lyricStr) return [];
@@ -82,11 +84,10 @@ const scroll = (dom: HTMLDivElement, distance: number) => {
 
 // containerDom：滚动容器， 当前dom：dom
 const srcollToActiveLine = (containerDom: any, dom: any) => {
-  const baseLine = 180;
   if (!containerDom) return;
   // 如果当前标亮的段落超过基准线，则滚动超过的部分
-  if (dom.offsetTop > baseLine) {
-    scroll(containerDom, dom.offsetTop - baseLine);
+  if (dom.offsetTop > BASELINE) {
+    scroll(containerDom, dom.offsetTop - BASELINE);
   } else {
     scroll(containerDom, 0);
   }
@@ -115,9 +116,6 @@ const Lyric = (props: Iprops) => {
     if (lyricDom.current.length > 0) {
       srcollToActiveLine(container, lyricDom.current[index]);
     }
-    return () => {
-      setActiveIndex(0);
-    };
   }, [playedSeconds]);
 
   return (

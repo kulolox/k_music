@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Tag, List, Button } from 'antd';
+import { Tag, List, Button, BackTop } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { IInfo, IList, setInfo, setList } from '@/store/albumSlice';
 import { getAlbumDetail, getSongList, getSongUrl } from '@/api';
@@ -153,6 +153,7 @@ const Album = (props: any) => {
           )}
         />
       </div>
+      <BackTop visibilityHeight={600} />
     </div>
   );
 };

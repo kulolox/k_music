@@ -22,12 +22,13 @@ const ListButton = () => {
     dispatch(playById({ data: { id } }));
   }, []);
   useEffect(() => {
+    // 初始化歌词
+    setLyric('');
     // 获取歌词
     const fetch = async () => {
       const id = list[currentIndex]?.id;
       if (id) {
         const result = await getSongLyric(id);
-        console.log('result:', result);
         if (result.data.lrc) {
           setLyric(result.data.lrc.lyric);
         }
@@ -40,6 +41,7 @@ const ListButton = () => {
       <Button onClick={() => toggleContainer(!showContainer)} type="text" icon={<IconFont type="icon-music-list" />} />
       {showContainer && (
         <div className={styles.container}>
+          <div className={styles.backImg} style={{ backgroundImage: `url('${list[currentIndex].coverImgUrl}')` }} />
           <div className={styles.content}>
             <div className={styles.listBox}>
               <div className={styles.head}>播放列表</div>

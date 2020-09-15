@@ -10,9 +10,9 @@ interface IProps {
 
 const ScrollContainer = (props: IProps) => {
   const { className, children, getContainerDom } = props;
-  const container = useRef<HTMLDivElement>(null);
   const [slideBlockStyle, setSlideBlockStyle] = React.useState<object>({});
   const [hasScrollBar, setHasScrollBar] = React.useState(true);
+  const container = useRef<HTMLDivElement>(null);
 
   // 解析滚动条
   const parseDom = useCallback((dom = container.current) => {
@@ -23,15 +23,15 @@ const ScrollContainer = (props: IProps) => {
     // 滑块距离顶部距离
     const slideBlockTop = (scrollTop * (clientHeight - slideBlockHeight)) / (scrollHeight - clientHeight);
 
-    if (isNaN(slideBlockTop)) {
+    if (slideBlockTop !== slideBlockTop) {
       setHasScrollBar(false);
-      return;
+    } else {
+      setHasScrollBar(true);
+      setSlideBlockStyle({
+        height: slideBlockHeight, // 滑块高度
+        top: slideBlockTop, // 滑块距离顶部距离
+      });
     }
-    setHasScrollBar(true);
-    setSlideBlockStyle({
-      height: slideBlockHeight,
-      top: slideBlockTop,
-    });
   }, []);
 
   const handelScroll = React.useCallback(e => {
@@ -39,26 +39,24 @@ const ScrollContainer = (props: IProps) => {
   }, []);
 
   useEffect(() => {
-    if (!children) return;
-    // 滚动容器传出组件
+    // 滚动容器dom传递到父组件
     if (getContainerDom) {
       getContainerDom(container.current);
     }
-    const dom = container.current as HTMLElement;
-    dom.addEventListener('scroll', handelScroll);
-    return () => dom.removeEventListener('scroll', handelScroll);
+    container.current!.addEventListener('scroll', handelScroll);
+    return () => container.current!.removeEventListener('scroll', handelScroll);
   }, []);
 
   return (
     <div className={classNames(styles.container, className)}>
+      <div ref={container} className={styles.scrollContent}>
+        {children}
+      </div>
       {hasScrollBar && (
         <div className={styles.scrollBar}>
           <span style={{ ...slideBlockStyle }} />
         </div>
       )}
-      <div ref={container} className={styles.scrollContent}>
-        {children}
-      </div>
     </div>
   );
 };
