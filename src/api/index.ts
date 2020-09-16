@@ -1,6 +1,6 @@
 import request from './request';
 import { AxiosResponse } from 'axios';
-const baseUrl = 'https://api.kulolox.cn';
+const baseUrl = 'https://api.xujianfeng.club';
 
 /**
  * 获取首页轮播图
