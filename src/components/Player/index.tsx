@@ -70,9 +70,13 @@ const Player = () => {
     RPlayer.current!.currentTime = val;
   }, []);
 
+  // 音量控制
+  useEffect(() => {
+    RPlayer.current!.volume = volume / 100;
+  }, [volume]);
+
   // 根据播放状态及当前歌曲切换播放暂停
   useEffect(() => {
-    console.log('currentIndex:', currentIndex);
     if (playing) {
       RPlayer.current!.play();
     } else {

@@ -130,7 +130,7 @@ const Lyric = (props: Iprops) => {
             className={classNames('lyric', styles.line, {
               [styles.active]: activeIndex === index,
             })}
-            key={line.time}
+            key={line.time + line.txt}
           >
             {line.txt}
           </div>
