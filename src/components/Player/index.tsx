@@ -72,6 +72,7 @@ const Player = () => {
 
   // 根据播放状态及当前歌曲切换播放暂停
   useEffect(() => {
+    console.log('currentIndex:', currentIndex);
     if (playing) {
       RPlayer.current!.play();
     } else {
@@ -88,7 +89,7 @@ const Player = () => {
       RPlayer.current!.removeEventListener('ended', onEndedSong);
       RPlayer.current!.removeEventListener('durationchange', onDuration);
     };
-  }, [RPlayer.current]);
+  }, [RPlayer.current, currentIndex]);
   return (
     <div className={styles.player}>
       <audio ref={RPlayer} src={list[currentIndex]?.url} preload="auto"></audio>

@@ -16,7 +16,7 @@ export interface IList {
   seconds: number; // 歌曲时长
   authors: string; // 歌曲作者
   coverImgUrl: string; // 歌曲封面
-  canPlaying: boolean; // 歌曲是否可以播放
+  canPlaying?: boolean; // 歌曲是否可以播放
   url?: string;
 }
 
