@@ -1,18 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Tag, List, Button, BackTop } from 'antd';
+import { PlusSquareOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { IInfo, IList, setInfo, setList } from '@/store/albumSlice';
 import { getAlbumDetail, getSongList, getSongUrl } from '@/api';
 import { arraySplit } from '@/utils/tool';
 import Duration from '@/components/Duration';
 import { RootState } from '@/store/rootReducer';
-import { playById } from '@/store/playerSlice';
+import { playById, setPlaying } from '@/store/playerSlice';
 import styles from './index.module.less';
 import { setSongList } from '@/store/playerSlice';
 
 const Album = (props: any) => {
   const dispatch = useDispatch();
   const [id] = useState(props.match.params.id);
+  const [songListData, setSongListData] = useState<IList[]>([]);
   const [loading, setLoading] = useState(true);
   const album = useSelector((state: RootState) => state.album);
   // 获取歌单详情
@@ -67,40 +69,62 @@ const Album = (props: any) => {
   const getSongsUrl = useCallback(async (list: IList[]) => {
     // 添加歌曲缓存机制,以专辑id为key
     let data: IList[] = [];
-    const cacheData = localStorage.getItem(id) || null;
-    if (cacheData) {
-      data = JSON.parse(cacheData);
+    const cacheAlbumSongList = localStorage.getItem(id) || null;
+    if (cacheAlbumSongList) {
+      data = JSON.parse(cacheAlbumSongList);
     } else {
       const request = list.map(t => getSongUrl(t.id));
       const result = await Promise.all(request);
-      const newData = list.map((t, index) => ({
+      data = list.map((t, index) => ({
         ...t,
         canPlaying: !!result[index].data.data[0].url,
         url: result[index].data.data[0].url,
       }));
-      data = newData.filter(t => t.canPlaying);
       localStorage.setItem(id, JSON.stringify(data));
-      dispatch(
-        setList({
-          data: newData,
-        }),
-      );
     }
-    // 更新可播放歌曲列表
+    setSongListData(data);
     dispatch(
-      setSongList({
+      setList({
         data,
       }),
     );
+    const cacheSongList = localStorage.getItem('cache-song-list') || null;
+    if (cacheSongList) {
+      dispatch(setSongList({ data: JSON.parse(cacheSongList) }));
+    } else {
+      const canPlayList = data.filter(t => t.canPlaying);
+      localStorage.setItem('cache-song-list', JSON.stringify(canPlayList));
+      dispatch(setSongList({ data: canPlayList }));
+    }
   }, []);
 
-  const playSong = useCallback(id => {
+  // 载入当前歌单可播放歌曲
+  const initData = useCallback(() => {
+    const canPlayList = songListData.filter(t => t.canPlaying);
+    // 更新可播放歌曲列表
+    localStorage.setItem('cache-song-list', JSON.stringify(canPlayList));
+    dispatch(
+      setSongList({
+        data: canPlayList,
+      }),
+    );
+    dispatch(setPlaying({ playing: false }));
+  }, [songListData]);
+
+  // 播放
+  const playSong = useCallback(() => {
+    initData();
+    dispatch(setPlaying({ playing: true }));
+  }, [songListData]);
+
+  const playSongById = useCallback(id => {
     dispatch(playById({ id }));
   }, []);
 
   useEffect(() => {
     getAlbumInfo(id);
   }, [id]);
+
   return (
     <div className={styles.album}>
       <div className={styles.head}>
@@ -115,6 +139,14 @@ const Album = (props: any) => {
           <div className={styles.nickname}>
             创建者：
             {album.info.nickname}
+          </div>
+          <div className={styles.buttonGroup}>
+            <Button size="small" icon={<PlayCircleOutlined />} onClick={playSong}>
+              播放
+            </Button>
+            <Button size="small" onClick={initData}>
+              <PlusSquareOutlined />
+            </Button>
           </div>
           <div className={styles.tags}>
             标签：
@@ -147,7 +179,7 @@ const Album = (props: any) => {
                 </div>
                 <div className={styles.canPlaying}>
                   {item.canPlaying ? (
-                    <Button onClick={() => playSong(item.id)} type="text" size="small">
+                    <Button onClick={() => playSongById(item.id)} type="text" size="small">
                       播放
                     </Button>
                   ) : (

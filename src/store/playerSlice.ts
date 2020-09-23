@@ -37,6 +37,9 @@ const playerSlice = createSlice({
     setPlayedSconds: (state, action) => {
       state.playedSeconds = action.payload.playedSeconds;
     },
+    setPlaying: (state, action) => {
+      state.playing = action.payload.playing;
+    },
     prev: state => {
       state.currentIndex -= 1;
       state.playing = true;
@@ -77,6 +80,7 @@ export const {
   togglePlaying,
   playById,
   onEnded,
+  setPlaying,
   setPlayedSconds,
 } = playerSlice.actions;
 

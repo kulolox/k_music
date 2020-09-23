@@ -35,7 +35,7 @@ const ListButton = () => {
       }
     };
     fetch();
-  }, [currentIndex]);
+  }, [currentIndex, list]);
   return (
     <div className={styles.list}>
       <Badge count={list.length} overflowCount={99} size="small" offset={[5, 0]}>
