@@ -50,7 +50,7 @@ const playerSlice = createSlice({
       state.playing = playing;
     },
     playById: (state, action) => {
-      state.currentIndex = state.list.findIndex(t => t.id === action.payload.data.id);
+      state.currentIndex = state.list.findIndex(t => t.id === action.payload.id);
       state.playing = true;
     },
     onEnded: state => {

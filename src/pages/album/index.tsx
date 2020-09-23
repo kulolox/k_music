@@ -16,7 +16,7 @@ const Album = (props: any) => {
   const [loading, setLoading] = useState(true);
   const album = useSelector((state: RootState) => state.album);
   // 获取歌单详情
-  const getAlbumInfo = useCallback(async () => {
+  const getAlbumInfo = useCallback(async id => {
     const { data } = await getAlbumDetail(id);
     const { playlist } = data;
     const info: IInfo = {
@@ -59,7 +59,7 @@ const Album = (props: any) => {
       coverImgUrl: t.al.picUrl,
       canPlaying: canMusicPlay(privileges[i]),
     }));
-    // 先存储无url的数据
+    // 先存储无url的数据,歌单详情渲染的列表数据
     dispatch(
       setList({
         data: list,
@@ -72,27 +72,38 @@ const Album = (props: any) => {
   }, []);
 
   const getSongsUrl = useCallback(async (list: IList[]) => {
-    const data = list.filter(t => t.canPlaying);
-    const request = data.map(t => getSongUrl(t.id));
-    const result = await Promise.all(request);
-    const newData = data.map((t, index) => ({
-      ...t,
-      url: result[index].data.data[0].url,
-    }));
-    dispatch(
-      setSongList({
-        data: newData,
-      }),
-    );
+    // 添加歌曲缓存机制
+    const cacheData = localStorage.getItem(id) || null;
+    if (cacheData) {
+      dispatch(
+        setSongList({
+          data: JSON.parse(cacheData),
+        }),
+      );
+    } else {
+      const data = list.filter(t => t.canPlaying);
+      const request = data.map(t => getSongUrl(t.id));
+      const result = await Promise.all(request);
+      const newData = data.map((t, index) => ({
+        ...t,
+        url: result[index].data.data[0].url,
+      }));
+      localStorage.setItem(id, JSON.stringify(newData));
+      dispatch(
+        setSongList({
+          data: newData,
+        }),
+      );
+    }
   }, []);
 
   const playSong = useCallback(id => {
-    dispatch(playById({ data: { id } }));
+    dispatch(playById({ id }));
   }, []);
 
   useEffect(() => {
-    getAlbumInfo();
-  }, []);
+    getAlbumInfo(id);
+  }, [id]);
   return (
     <div className={styles.album}>
       <div className={styles.head}>

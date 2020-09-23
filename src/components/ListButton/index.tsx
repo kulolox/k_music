@@ -19,7 +19,7 @@ const ListButton = () => {
     setShowContainer(val);
   }, []);
   const play = useCallback(id => {
-    dispatch(playById({ data: { id } }));
+    dispatch(playById({ id }));
   }, []);
   useEffect(() => {
     // 初始化歌词
@@ -47,7 +47,10 @@ const ListButton = () => {
       </Badge>
       {showContainer && (
         <div className={styles.container}>
-          <div className={styles.backImg} style={{ backgroundImage: `url('${list[currentIndex].coverImgUrl}')` }} />
+          <div
+            className={styles.backImg}
+            style={{ backgroundImage: `url('${list[currentIndex].coverImgUrl}')` }}
+          />
           <div className={styles.content}>
             <div className={styles.listBox}>
               <div className={styles.head}>播放列表</div>
