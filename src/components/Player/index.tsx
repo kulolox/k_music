@@ -1,11 +1,10 @@
-import React, { useCallback, useRef, useMemo, useState } from 'react';
+import React, { useCallback, useRef, useMemo, useState, useEffect } from 'react';
 import { Button, Avatar, Slider } from 'antd';
-import ReactPlayer from 'react-player';
 import classNames from 'classnames';
 import IconFont from '@components/IconFont';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/rootReducer';
-import { prev, next, togglePlay, onEnded, setPlayedSconds } from '@/store/playerSlice';
+import { prev, next, onEnded, setPlayedSconds, togglePlaying } from '@/store/playerSlice';
 import Duration from '@components/Duration';
 import Volume from '@components/Volume';
 import ListButton from '@components/ListButton';
@@ -16,8 +15,10 @@ const DEFAULT_COVER_IMAGE = 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvq
 const Player = () => {
   const { currentIndex, list, playing } = useSelector((state: RootState) => state.player);
   const dispatch = useDispatch();
-  const RPlayer = useRef<ReactPlayer>(null);
+  const RPlayer = useRef<HTMLAudioElement>(null);
   const [progressValue, setProgressValue] = useState(0);
+  // 总时长
+  const [duration, setDuration] = useState(0);
   // 拖动进度条时不更新数据
   const [seeking, setSeeking] = useState(false);
   const [volume, setVolume] = useState(60);
@@ -27,50 +28,70 @@ const Player = () => {
   const hastSong = useMemo(() => list.length > 0, [list]);
 
   // redux
-  const togglePlaySong = useCallback(() => {
-    dispatch(togglePlay());
+  const togglePlay = useCallback(val => {
+    dispatch(togglePlaying({ playing: val }));
   }, []);
+
   const prevSong = useCallback(() => {
     dispatch(prev());
   }, []);
   const nextSong = useCallback(() => {
     dispatch(next());
   }, []);
+
   const onEndedSong = useCallback(() => {
     dispatch(onEnded());
   }, []);
-  const onProgressSong = useCallback(state => {
-    dispatch(setPlayedSconds({ data: { playedSeconds: state.playedSeconds } }));
+
+  // audio ontimeupdate事件每隔250ms触发一次
+  const onTimeUpdate = useCallback(() => {
+    dispatch(setPlayedSconds({ playedSeconds: RPlayer.current!.currentTime }));
     if (!seeking) {
-      setProgressValue(state.playedSeconds);
+      setProgressValue(RPlayer.current!.currentTime);
     }
+  }, []);
+
+  const onDuration = useCallback(() => {
+    setDuration(RPlayer.current!.duration);
   }, []);
 
   // 本地状态
   const onVolumeChange = useCallback(val => {
     setVolume(val);
   }, []);
+
   const progressChange = useCallback(val => {
     setSeeking(true);
     setProgressValue(val);
   }, []);
+
   const progressAfterChange = useCallback(val => {
     setSeeking(false);
-    RPlayer.current!.seekTo(val);
+    RPlayer.current!.currentTime = val;
   }, []);
 
+  // 根据播放状态及当前歌曲切换播放暂停
+  useEffect(() => {
+    if (playing) {
+      RPlayer.current!.play();
+    } else {
+      RPlayer.current!.pause();
+    }
+  }, [currentIndex, playing]);
+
+  useEffect(() => {
+    RPlayer.current!.addEventListener('timeupdate', onTimeUpdate);
+    RPlayer.current!.addEventListener('ended', onEndedSong);
+    RPlayer.current!.addEventListener('durationchange', onDuration);
+    return () => {
+      RPlayer.current!.removeEventListener('timeupdate', onTimeUpdate);
+      RPlayer.current!.removeEventListener('ended', onEndedSong);
+      RPlayer.current!.removeEventListener('durationchange', onDuration);
+    };
+  }, [RPlayer.current]);
   return (
     <div className={styles.player}>
-      <div className={styles.reactPlayer}>
-        <ReactPlayer
-          ref={RPlayer}
-          url={list[currentIndex]?.url}
-          playing={playing}
-          volume={volume / 100}
-          onProgress={onProgressSong}
-          onEnded={onEndedSong}
-        />
-      </div>
+      <audio ref={RPlayer} src={list[currentIndex]?.url} preload="auto"></audio>
       <div className={styles.audio}>
         <div className={styles.controller}>
           <div className={styles.button}>
@@ -85,11 +106,17 @@ const Player = () => {
           <div className={styles.button}>
             <Button
               disabled={!hastSong}
-              onClick={togglePlaySong}
+              onClick={() => togglePlay(!playing)}
               shape="circle"
               type="ghost"
               size="large"
-              icon={playing ? <IconFont style={{ fontSize: 25 }} type="icon-pause" /> : <IconFont type="icon-play" />}
+              icon={
+                playing ? (
+                  <IconFont style={{ fontSize: 25 }} type="icon-pause" />
+                ) : (
+                  <IconFont type="icon-play" />
+                )
+              }
             />
           </div>
           <div className={styles.button}>
@@ -113,7 +140,7 @@ const Player = () => {
               <div>
                 <Duration seconds={progressValue} />
                 /
-                <Duration seconds={list[currentIndex]?.seconds ?? 0} />
+                <Duration seconds={duration} />
               </div>
             </div>
             <div className={styles.progress}>

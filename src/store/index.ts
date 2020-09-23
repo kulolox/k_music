@@ -3,7 +3,15 @@ import logger from 'redux-logger';
 import { useDispatch } from 'react-redux';
 import rootReducer from './rootReducer';
 
-const middleware = [...getDefaultMiddleware(), logger];
+const middleware = [
+  ...getDefaultMiddleware({
+    serializableCheck: false,
+    // serializableCheck: {
+    //   ignoredActions: ['player/setAudio'], // redux推荐只将可序列化的数据存入store，该配置忽略了该规则，因为我们需要全局共享audio实例
+    // },
+  }),
+  logger,
+];
 
 const store = configureStore({
   reducer: rootReducer,

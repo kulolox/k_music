@@ -18,7 +18,7 @@ const render = (): void => {
 
 render();
 
-// 热加载
+// 热更新
 if (process.env.NODE_ENV === 'development' && module.hot) {
   module.hot.accept('./App', render);
 }

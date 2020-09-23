@@ -14,8 +14,8 @@ interface IPlayerDefaultState {
   currentIndex: number; // 当前播放歌曲
   playing: boolean;
   loop: boolean;
-  list: IList[];
   playedSeconds: number;
+  list: IList[];
 }
 
 const defaultState: IPlayerDefaultState = {
@@ -35,7 +35,7 @@ const playerSlice = createSlice({
       state.currentIndex = 0;
     },
     setPlayedSconds: (state, action) => {
-      state.playedSeconds = action.payload.data.playedSeconds;
+      state.playedSeconds = action.payload.playedSeconds;
     },
     prev: state => {
       state.currentIndex -= 1;
@@ -45,12 +45,13 @@ const playerSlice = createSlice({
       state.currentIndex += 1;
       state.playing = true;
     },
+    togglePlaying: (state, action) => {
+      const { playing } = action.payload;
+      state.playing = playing;
+    },
     playById: (state, action) => {
       state.currentIndex = state.list.findIndex(t => t.id === action.payload.data.id);
       state.playing = true;
-    },
-    togglePlay: state => {
-      state.playing = !state.playing;
     },
     onEnded: state => {
       const { currentIndex, list, loop } = state;
@@ -69,5 +70,14 @@ const playerSlice = createSlice({
   },
 });
 
-export const { setSongList, prev, next, togglePlay, playById, onEnded, setPlayedSconds } = playerSlice.actions;
+export const {
+  setSongList,
+  prev,
+  next,
+  togglePlaying,
+  playById,
+  onEnded,
+  setPlayedSconds,
+} = playerSlice.actions;
+
 export default playerSlice.reducer;

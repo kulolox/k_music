@@ -6,7 +6,7 @@ import Player from '../Player';
 
 const PlayerBox = () => {
   // TODO 播放器容器暂时展开
-  const [isLock, setLock] = useState(false);
+  const [isLock, setLock] = useState(true);
   const toggltLock = useCallback(val => {
     setLock(val);
   }, []);
