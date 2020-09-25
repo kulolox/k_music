@@ -19,6 +19,7 @@ const Player = () => {
   const [progressValue, setProgressValue] = useState(0);
   // 总时长
   const [duration, setDuration] = useState(0);
+  // const [currentUrl, setCurrentUrl] = useState('');
   // 拖动进度条时不更新数据
   const [seeking, setSeeking] = useState(false);
   const [volume, setVolume] = useState(60);
@@ -74,6 +75,17 @@ const Player = () => {
   useEffect(() => {
     RPlayer.current!.volume = volume / 100;
   }, [volume]);
+
+  // useEffect(() => {
+  //   // 获取歌曲链接
+  //   const fetchData = async () => {
+  //     getSongUrl(list[currentIndex].id).then(res => {
+  //       console.log(res);
+  //       setCurrentUrl(res.data.data[0].url);
+  //     });
+  //   };
+  //   fetchData();
+  // }, [currentIndex, playing]);
 
   // 根据播放状态及当前歌曲切换播放暂停
   useEffect(() => {

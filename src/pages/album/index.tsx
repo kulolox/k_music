@@ -28,33 +28,31 @@ const Album = (props: any) => {
       coverImgUrl: playlist.coverImgUrl,
       description: playlist.description,
       tags: playlist.tags,
-      trackIds: playlist.trackIds,
     };
     dispatch(
       setInfo({
         data: info,
       }),
     );
-    getAlbumList(info.trackIds);
+    getAlbumList(playlist.trackIds);
   }, []);
 
   // 获取歌曲列表
   const getAlbumList = useCallback(async trackIds => {
+    // 切割组合歌曲id
     const formatIds = arraySplit(trackIds.map((t: { id: string }) => t.id)).map(t => t.join(','));
     const requests = formatIds.map(ids => getSongList(ids));
 
     const result = await Promise.all(requests);
 
     let songs: any[] = [];
-    let privileges: any[] = [];
 
     result.forEach(t => {
       songs = songs.concat(t.data.songs);
-      privileges = privileges.concat(t.data.privileges);
     });
 
     const list: IList[] = songs.map((t, i) => ({
-      id: privileges[i].id,
+      id: songs[i].id,
       name: t.name,
       seconds: t.dt / 1000,
       authors: t.ar.map((j: { name: string }) => j.name).join('，'),
@@ -62,10 +60,9 @@ const Album = (props: any) => {
     }));
     // 后台获取歌曲url
     getSongsUrl(list);
-    // 歌曲列表加载状态
-    setLoading(false);
   }, []);
 
+  // 获取所有歌曲播放链接
   const getSongsUrl = useCallback(async (list: IList[]) => {
     // 添加歌曲缓存机制,以专辑id为key
     let data: IList[] = [];
@@ -96,6 +93,8 @@ const Album = (props: any) => {
       localStorage.setItem('cache-song-list', JSON.stringify(canPlayList));
       dispatch(setSongList({ data: canPlayList }));
     }
+    // 歌曲列表加载状态
+    setLoading(false);
   }, []);
 
   // 载入当前歌单可播放歌曲
@@ -117,9 +116,13 @@ const Album = (props: any) => {
     dispatch(setPlaying({ playing: true }));
   }, [songListData]);
 
-  const playSongById = useCallback(id => {
-    dispatch(playById({ id }));
-  }, []);
+  const playSongById = useCallback(
+    id => {
+      initData();
+      dispatch(playById({ id }));
+    },
+    [songListData],
+  );
 
   useEffect(() => {
     getAlbumInfo(id);

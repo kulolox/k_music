@@ -6,7 +6,6 @@ export interface IInfo {
   nickname: string;
   coverImgUrl: string;
   description: string;
-  trackIds: string[];
   tags: string[];
 }
 
@@ -33,7 +32,6 @@ const defaultState: IAlbumDefaultState = {
     coverImgUrl: '',
     tags: [],
     description: '',
-    trackIds: [],
   },
   list: [],
 };
