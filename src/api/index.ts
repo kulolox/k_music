@@ -36,7 +36,9 @@ interface AlbumArg {
  * 获取歌单
  */
 function getAlbumList({ limit, cat, offset = 0, order = 'hot' }: AlbumArg): Promise<AxiosResponse> {
-  return request.get(`${baseUrl}/top/playlist/?limit=${limit}&order=${order}&offset=${offset}&cat=${cat}`);
+  return request.get(
+    `${baseUrl}/top/playlist/?limit=${limit}&order=${order}&offset=${offset}&cat=${cat}`,
+  );
 }
 
 /**
@@ -57,18 +59,27 @@ function getSongList(ids: string): Promise<AxiosResponse> {
 
 /**
  * 获取歌曲播放链接
- * @param {string} id
+ * @param {number} id
  */
-function getSongUrl(id: string): Promise<AxiosResponse> {
+function getSongUrl(id: number): Promise<AxiosResponse> {
   return request.get(`${baseUrl}/song/url?id=${id}`);
 }
 
 /**
  * 获取歌曲歌词
- * @param {string} id
+ * @param {number} id
  */
-function getSongLyric(id: string): Promise<AxiosResponse> {
+function getSongLyric(id: number): Promise<AxiosResponse> {
   return request.get(`${baseUrl}/lyric?id=${id}`);
 }
 
-export { getBanner, getCatlist, getHotCatlist, getAlbumList, getAlbumDetail, getSongList, getSongUrl, getSongLyric };
+export {
+  getBanner,
+  getCatlist,
+  getHotCatlist,
+  getAlbumList,
+  getAlbumDetail,
+  getSongList,
+  getSongUrl,
+  getSongLyric,
+};

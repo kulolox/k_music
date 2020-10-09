@@ -1,7 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { getSongUrl } from '@/api';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 export interface IList {
-  id: string; // 歌曲id
+  id: number; // 歌曲id
   name: string; // 歌曲名
   seconds: number; // 歌曲时长
   authors: string; // 歌曲作者
@@ -12,6 +13,7 @@ export interface IList {
 
 interface IPlayerDefaultState {
   currentIndex: number; // 当前播放歌曲
+  currentUrl: string;
   playing: boolean;
   loop: boolean;
   playedSeconds: number;
@@ -20,19 +22,36 @@ interface IPlayerDefaultState {
 
 const defaultState: IPlayerDefaultState = {
   currentIndex: -1,
+  currentUrl: '',
   playing: false,
   loop: false,
   playedSeconds: 0,
   list: [],
 };
 
+export const getSongUrlById = createAsyncThunk('player/getSongUrl', async (data: any) => {
+  const res = await getSongUrl(data.id);
+  return {
+    data: res.data,
+    index: data.index,
+  };
+});
+
 const playerSlice = createSlice({
   name: 'player',
   initialState: defaultState,
+  extraReducers: builder => {
+    builder.addCase(getSongUrlById.fulfilled, (state, action) => {
+      state.currentUrl = action.payload.data.data[0].url;
+      state.currentIndex = action.payload.index;
+      state.playing = true;
+    });
+  },
   reducers: {
     setSongList: (state, action) => {
       state.list = action.payload.data;
       state.currentIndex = 0;
+      state.currentUrl = state.list[0].url;
     },
     setPlayedSconds: (state, action) => {
       state.playedSeconds = action.payload.playedSeconds;
@@ -40,46 +59,20 @@ const playerSlice = createSlice({
     setPlaying: (state, action) => {
       state.playing = action.payload.playing;
     },
-    prev: state => {
-      state.currentIndex -= 1;
-      state.playing = true;
-    },
-    next: state => {
-      state.currentIndex += 1;
-      state.playing = true;
+    setCurrentIndex: (state, action) => {
+      state.currentIndex = action.payload.index;
     },
     togglePlaying: (state, action) => {
       const { playing } = action.payload;
       state.playing = playing;
-    },
-    playById: (state, action) => {
-      state.currentIndex = state.list.findIndex(t => t.id === action.payload.id);
-      state.playing = true;
-    },
-    onEnded: state => {
-      const { currentIndex, list, loop } = state;
-      // 单曲循环
-      if (loop) {
-        // TODO 单曲循环
-      }
-      // 顺序播放
-      if (currentIndex < list.length - 1) {
-        state.currentIndex += 1;
-        state.playing = true;
-      } else {
-        state.playing = false;
-      }
     },
   },
 });
 
 export const {
   setSongList,
-  prev,
-  next,
+  setCurrentIndex,
   togglePlaying,
-  playById,
-  onEnded,
   setPlaying,
   setPlayedSconds,
 } = playerSlice.actions;

@@ -5,7 +5,7 @@ import IconFont from '@components/IconFont';
 import ScrollContainer from '@components/ScrollContainer';
 import Duration from '@components/Duration';
 import { RootState } from '@/store/rootReducer';
-import { playById } from '@/store/playerSlice';
+import { getSongUrlById } from '@/store/playerSlice';
 import { getSongLyric } from '@/api';
 import Lyric from '@components/Lyric';
 import styles from './index.module.less';
@@ -18,9 +18,12 @@ const ListButton = () => {
   const toggleContainer = useCallback(val => {
     setShowContainer(val);
   }, []);
+
   const play = useCallback(id => {
-    dispatch(playById({ id }));
+    const index = list.findIndex(t => t.id === id);
+    dispatch(getSongUrlById({ id, index }));
   }, []);
+
   useEffect(() => {
     // 初始化歌词
     setLyric('');

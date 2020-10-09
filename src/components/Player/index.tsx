@@ -4,7 +4,13 @@ import classNames from 'classnames';
 import IconFont from '@components/IconFont';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/rootReducer';
-import { prev, next, onEnded, setPlayedSconds, togglePlaying } from '@/store/playerSlice';
+import {
+  // setCurrentIndex,
+  setPlayedSconds,
+  togglePlaying,
+  getSongUrlById,
+  setPlaying,
+} from '@/store/playerSlice';
 import Duration from '@components/Duration';
 import Volume from '@components/Volume';
 import ListButton from '@components/ListButton';
@@ -13,13 +19,14 @@ import styles from './index.module.less';
 const DEFAULT_COVER_IMAGE = 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
 
 const Player = () => {
-  const { currentIndex, list, playing } = useSelector((state: RootState) => state.player);
+  const { currentIndex, currentUrl, list, playing } = useSelector(
+    (state: RootState) => state.player,
+  );
   const dispatch = useDispatch();
   const RPlayer = useRef<HTMLAudioElement>(null);
   const [progressValue, setProgressValue] = useState(0);
   // 总时长
   const [duration, setDuration] = useState(0);
-  // const [currentUrl, setCurrentUrl] = useState('');
   // 拖动进度条时不更新数据
   const [seeking, setSeeking] = useState(false);
   const [volume, setVolume] = useState(60);
@@ -34,15 +41,22 @@ const Player = () => {
   }, []);
 
   const prevSong = useCallback(() => {
-    dispatch(prev());
-  }, []);
+    const index = currentIndex - 1;
+    dispatch(getSongUrlById({ id: list[index].id, index }));
+  }, [list, currentIndex]);
+
   const nextSong = useCallback(() => {
-    dispatch(next());
-  }, []);
+    const index = currentIndex + 1;
+    dispatch(getSongUrlById({ id: list[index].id, index }));
+  }, [list, currentIndex]);
 
   const onEndedSong = useCallback(() => {
-    dispatch(onEnded());
-  }, []);
+    if (currentIndex < list.length - 1) {
+      nextSong();
+    } else {
+      dispatch(setPlaying({ playing: false }));
+    }
+  }, [list, currentIndex]);
 
   // audio ontimeupdate事件每隔250ms触发一次
   const onTimeUpdate = useCallback(() => {
@@ -76,17 +90,6 @@ const Player = () => {
     RPlayer.current!.volume = volume / 100;
   }, [volume]);
 
-  // useEffect(() => {
-  //   // 获取歌曲链接
-  //   const fetchData = async () => {
-  //     getSongUrl(list[currentIndex].id).then(res => {
-  //       console.log(res);
-  //       setCurrentUrl(res.data.data[0].url);
-  //     });
-  //   };
-  //   fetchData();
-  // }, [currentIndex, playing]);
-
   // 根据播放状态及当前歌曲切换播放暂停
   useEffect(() => {
     if (playing) {
@@ -108,7 +111,7 @@ const Player = () => {
   }, [RPlayer.current, currentIndex]);
   return (
     <div className={styles.player}>
-      <audio ref={RPlayer} src={list[currentIndex]?.url} preload="auto"></audio>
+      <audio ref={RPlayer} src={currentUrl} preload="auto"></audio>
       <div className={styles.audio}>
         <div className={styles.controller}>
           <div className={styles.button}>
