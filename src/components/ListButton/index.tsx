@@ -19,10 +19,13 @@ const ListButton = () => {
     setShowContainer(val);
   }, []);
 
-  const play = useCallback(id => {
-    const index = list.findIndex(t => t.id === id);
-    dispatch(getSongUrlById({ id, index }));
-  }, []);
+  const play = useCallback(
+    id => {
+      const index = list.findIndex(t => t.id === id);
+      dispatch(getSongUrlById({ id, index }));
+    },
+    [list],
+  );
 
   useEffect(() => {
     // 初始化歌词
@@ -52,7 +55,7 @@ const ListButton = () => {
         <div className={styles.container}>
           <div
             className={styles.backImg}
-            style={{ backgroundImage: `url('${list[currentIndex].coverImgUrl}')` }}
+            style={{ backgroundImage: `url('${list[currentIndex]?.coverImgUrl}')` }}
           />
           <div className={styles.content}>
             <div className={styles.listBox}>
