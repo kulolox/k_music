@@ -18,7 +18,7 @@ function App(): JSX.Element {
       dispatch(setSongList({ data }));
       dispatch(getSongUrlById({ index: 0, id: data[0].id }));
     }
-  }, []);
+  }, [dispatch]);
   return (
     <Fragment>
       <Router>
