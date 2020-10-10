@@ -32,10 +32,10 @@ const defaultState: IPlayerDefaultState = {
 // 每次播放都重新获取歌曲url
 export const getSongUrlById = createAsyncThunk('player/getSongUrl', async (data: any) => {
   const res = await getSongUrl(data.id);
-  return {
+  return Promise.resolve({
     data: res.data,
     index: data.index,
-  };
+  });
 });
 
 const playerSlice = createSlice({
