@@ -73,15 +73,18 @@ export default (): JSX.Element => {
   }, []);
 
   // 分页变动
-  const onPageNoChange = useCallback(pageIndex => {
-    const params = {
-      cat,
-      limit: LIMIT,
-      offset: pageIndex * LIMIT,
-    };
-    setPageNo(pageIndex);
-    getAlbumListFunc(params);
-  }, []);
+  const onPageNoChange = useCallback(
+    pageIndex => {
+      const params = {
+        cat,
+        limit: LIMIT,
+        offset: pageIndex * LIMIT,
+      };
+      setPageNo(pageIndex);
+      getAlbumListFunc(params);
+    },
+    [cat],
+  );
 
   // 风格切换
   const catSelect = useCallback(cat => {

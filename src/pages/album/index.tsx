@@ -7,7 +7,7 @@ import { getAlbumDetail, getSongList, getSongUrl } from '@/api';
 import { arraySplit, checkMusic } from '@/utils/tool';
 import Duration from '@/components/Duration';
 import { RootState } from '@/store/rootReducer';
-import { getSongUrlById, setPlaying } from '@/store/playerSlice';
+import { getSongUrlById } from '@/store/playerSlice';
 import styles from './index.module.less';
 import { setSongList } from '@/store/playerSlice';
 
@@ -102,26 +102,27 @@ const Album = (props: any) => {
 
   // 载入当前歌单可播放歌曲
   const initData = useCallback(() => {
-    const canPlayList = songListData.filter(t => t.canPlaying);
-    // 更新可播放歌曲列表
-    localStorage.setItem('cache-song-list', JSON.stringify(canPlayList));
+    const canPlayList = songListData.filter(t => t.url);
     dispatch(
       setSongList({
         data: canPlayList,
       }),
     );
-    dispatch(setPlaying({ playing: false }));
+    // 更新可播放歌曲列表
+    localStorage.setItem('cache-song-list', JSON.stringify(canPlayList));
   }, [songListData]);
 
   // 播放
   const playSong = useCallback(() => {
     initData();
-    dispatch(setPlaying({ playing: true }));
+    dispatch(getSongUrlById({ id: songListData.filter(t => t.url)[0].id, index: 0 }));
   }, [songListData]);
 
   const playSongById = useCallback(
     id => {
+      // 载入数据
       initData();
+      // 根据id播放
       const index = songListData.findIndex(t => t.id === id);
       dispatch(getSongUrlById({ id, index }));
     },

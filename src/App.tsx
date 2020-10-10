@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import PlayerBox from '@components/PlayerBox';
 import './App.css';
 import { useDispatch } from 'react-redux';
-import { setSongList } from './store/playerSlice';
+import { getSongUrlById, setSongList } from './store/playerSlice';
 
 const Home = React.lazy(() => import('@pages/home'));
 const Album = React.lazy(() => import('@pages/album'));
@@ -14,7 +14,9 @@ function App(): JSX.Element {
   useEffect(() => {
     const cache = localStorage.getItem('cache-song-list') || null;
     if (cache) {
-      dispatch(setSongList({ data: JSON.parse(cache) }));
+      const data = JSON.parse(cache);
+      dispatch(setSongList({ data }));
+      dispatch(getSongUrlById({ index: 0, id: data[0].id }));
     }
   }, []);
   return (

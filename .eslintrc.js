@@ -11,27 +11,26 @@ module.exports = {
     browser: true,
     node: true,
     jasmine: true,
-    es6: true
+    es6: true,
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 6, //也就是ES6语法支持的意思
     sourceType: 'module',
     ecmaFeatures: {
-      modules: true
-    }
+      modules: true,
+    },
   },
   plugins: ['react', 'babel', '@typescript-eslint', 'react-hooks'],
-  // plugins: ['@typescript-eslint', 'react', 'react-hooks'],
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
       rules: {
         '@typescript-eslint/no-unused-vars': [2, { args: 'none' }],
         'no-unused-expressions': 'off',
-        '@typescript-eslint/no-unused-expressions': 2
-      }
-    }
+        '@typescript-eslint/no-unused-expressions': 2,
+      },
+    },
   ],
   rules: {
     'react/jsx-one-expression-per-line': 0,
@@ -71,6 +70,6 @@ module.exports = {
     'no-continue': 0,
     // ban this for Number.isNaN needs polyfill
     'no-restricted-globals': 0,
-    'max-classes-per-file': 0
-  }
+    'max-classes-per-file': 0,
+  },
 };

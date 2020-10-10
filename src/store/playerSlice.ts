@@ -29,6 +29,7 @@ const defaultState: IPlayerDefaultState = {
   list: [],
 };
 
+// 每次播放都重新获取歌曲url
 export const getSongUrlById = createAsyncThunk('player/getSongUrl', async (data: any) => {
   const res = await getSongUrl(data.id);
   return {
@@ -43,7 +44,7 @@ const playerSlice = createSlice({
   extraReducers: builder => {
     builder.addCase(getSongUrlById.fulfilled, (state, action) => {
       state.currentUrl = action.payload.data.data[0].url;
-      state.currentIndex = action.payload.index;
+      state.currentIndex = action.payload.index; // 更新当前序号
       state.playing = true;
     });
   },
@@ -51,7 +52,6 @@ const playerSlice = createSlice({
     setSongList: (state, action) => {
       state.list = action.payload.data;
       state.currentIndex = 0;
-      state.currentUrl = state.list[0].url;
     },
     setPlayedSconds: (state, action) => {
       state.playedSeconds = action.payload.playedSeconds;
