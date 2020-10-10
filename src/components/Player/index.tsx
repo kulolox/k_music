@@ -34,7 +34,7 @@ const Player = () => {
     } else {
       dispatch(setPlaying({ playing: false }));
     }
-  }, [list, currentIndex]);
+  }, [list, currentIndex, dispatch]);
 
   // audio ontimeupdate事件每隔250ms触发一次
   const onTimeUpdate = useCallback(() => {
@@ -42,7 +42,7 @@ const Player = () => {
     if (!seeking) {
       setProgressValue(RPlayer.current!.currentTime);
     }
-  }, []);
+  }, [seeking, dispatch]);
 
   const onDuration = useCallback(() => {
     setDuration(RPlayer.current!.duration);
@@ -78,15 +78,16 @@ const Player = () => {
   }, [currentIndex, playing]);
 
   useEffect(() => {
-    RPlayer.current!.addEventListener('timeupdate', onTimeUpdate);
-    RPlayer.current!.addEventListener('ended', onEndedSong);
-    RPlayer.current!.addEventListener('durationchange', onDuration);
+    const playerDom = RPlayer.current!;
+    playerDom.addEventListener('timeupdate', onTimeUpdate);
+    playerDom.addEventListener('ended', onEndedSong);
+    playerDom.addEventListener('durationchange', onDuration);
     return () => {
-      RPlayer.current!.removeEventListener('timeupdate', onTimeUpdate);
-      RPlayer.current!.removeEventListener('ended', onEndedSong);
-      RPlayer.current!.removeEventListener('durationchange', onDuration);
+      playerDom.removeEventListener('timeupdate', onTimeUpdate);
+      playerDom.removeEventListener('ended', onEndedSong);
+      playerDom.removeEventListener('durationchange', onDuration);
     };
-  }, [RPlayer.current, currentIndex]);
+  }, [currentIndex, onTimeUpdate, onEndedSong, onDuration]);
   return (
     <div className={styles.player}>
       <audio ref={RPlayer} src={currentUrl} preload="auto"></audio>

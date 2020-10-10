@@ -19,7 +19,7 @@ const NextButton = (props: IProps) => {
   const nextSong = useCallback(() => {
     const index = currentIndex + 1;
     dispatch(getSongUrlById({ id: list[index].id, index }));
-  }, [list, currentIndex]);
+  }, [list, currentIndex, dispatch]);
 
   return (
     <div className={props.className}>

@@ -11,7 +11,11 @@ const getDate = (seconds: number) => {
 };
 
 const Duration = (props: IProps) => {
-  return <span className={props.className}>{moment(getDate(props.seconds)).utcOffset(0).format('mm:ss')}</span>;
+  return (
+    <span className={props.className}>
+      {moment(getDate(props.seconds)).utcOffset(0).format('mm:ss')}
+    </span>
+  );
 };
 
 export default Duration;

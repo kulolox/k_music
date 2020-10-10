@@ -49,7 +49,7 @@ module.exports = {
     'react/no-unused-prop-types': 0,
     'react/default-props-match-prop-types': 0,
     'react-hooks/rules-of-hooks': 2, // Checks rules of Hooks
-
+    'react-hooks/exhaustive-deps': 'warn', // 检查effect依赖
     'import/extensions': 0,
     'import/no-cycle': 0,
     'jsx-a11y/no-static-element-interactions': 0,

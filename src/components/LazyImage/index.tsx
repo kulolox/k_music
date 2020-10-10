@@ -15,7 +15,7 @@ const LazyImage = (props: IProps) => {
     img.onload = () => {
       setOnload(true);
     };
-  }, []);
+  }, [props.src]);
   return (
     <img
       src={isOnload ? props.src : IMAGE_PLACHOLDER}

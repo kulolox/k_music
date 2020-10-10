@@ -15,9 +15,12 @@ const TogglePlayButton = (props: IProps) => {
   // 类似computed效果
   const hastSong = useMemo(() => list.length > 0, [list]);
 
-  const togglePlay = useCallback(val => {
-    dispatch(togglePlaying({ playing: val }));
-  }, []);
+  const togglePlay = useCallback(
+    val => {
+      dispatch(togglePlaying({ playing: val }));
+    },
+    [dispatch],
+  );
 
   return (
     <div className={props.className}>

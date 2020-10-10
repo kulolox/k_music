@@ -21,7 +21,8 @@ const ScrollContainer = (props: IProps) => {
     // 滑块高度
     const slideBlockHeight = clientHeight ** 2 / scrollHeight;
     // 滑块距离顶部距离
-    const slideBlockTop = (scrollTop * (clientHeight - slideBlockHeight)) / (scrollHeight - clientHeight);
+    const slideBlockTop =
+      (scrollTop * (clientHeight - slideBlockHeight)) / (scrollHeight - clientHeight);
 
     if (slideBlockTop !== slideBlockTop) {
       setHasScrollBar(false);
@@ -34,18 +35,22 @@ const ScrollContainer = (props: IProps) => {
     }
   }, []);
 
-  const handelScroll = React.useCallback(e => {
-    parseDom(e.target);
-  }, []);
+  const handelScroll = React.useCallback(
+    e => {
+      parseDom(e.target);
+    },
+    [parseDom],
+  );
 
   useEffect(() => {
+    const containerDom = container.current!;
     // 滚动容器dom传递到父组件
     if (getContainerDom) {
-      getContainerDom(container.current);
+      getContainerDom(containerDom);
     }
-    container.current!.addEventListener('scroll', handelScroll);
-    return () => container.current!.removeEventListener('scroll', handelScroll);
-  }, []);
+    containerDom.addEventListener('scroll', handelScroll);
+    return () => containerDom.removeEventListener('scroll', handelScroll);
+  }, [getContainerDom, handelScroll]);
 
   return (
     <div className={classNames(styles.container, className)}>

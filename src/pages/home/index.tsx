@@ -58,19 +58,22 @@ export default (): JSX.Element => {
   }, []);
 
   // 获取专辑列表
-  const getAlbumListFunc = useCallback(async (params = { cat: cat, limit: LIMIT, offset: 0 }) => {
-    const { data } = await getAlbumList(params);
-    setAlbumList(
-      data.playlists.map((album: IAblumList) => ({
-        id: album.id,
-        coverImgUrl: album.coverImgUrl,
-        playCount: album.playCount,
-        name: album.name,
-        creator: album.creator,
-      })),
-    );
-    setTotalAlbum(data.total);
-  }, []);
+  const getAlbumListFunc = useCallback(
+    async (params = { cat: cat, limit: LIMIT, offset: 0 }) => {
+      const { data } = await getAlbumList(params);
+      setAlbumList(
+        data.playlists.map((album: IAblumList) => ({
+          id: album.id,
+          coverImgUrl: album.coverImgUrl,
+          playCount: album.playCount,
+          name: album.name,
+          creator: album.creator,
+        })),
+      );
+      setTotalAlbum(data.total);
+    },
+    [cat],
+  );
 
   // 分页变动
   const onPageNoChange = useCallback(
@@ -83,21 +86,24 @@ export default (): JSX.Element => {
       setPageNo(pageIndex);
       getAlbumListFunc(params);
     },
-    [cat],
+    [cat, getAlbumListFunc],
   );
 
   // 风格切换
-  const catSelect = useCallback(cat => {
-    const params = {
-      cat,
-      limit: LIMIT,
-      offset: 0,
-    };
-    setShowCatList(false);
-    setCat(cat);
-    setPageNo(1);
-    getAlbumListFunc(params);
-  }, []);
+  const catSelect = useCallback(
+    cat => {
+      const params = {
+        cat,
+        limit: LIMIT,
+        offset: 0,
+      };
+      setShowCatList(false);
+      setCat(cat);
+      setPageNo(1);
+      getAlbumListFunc(params);
+    },
+    [getAlbumListFunc],
+  );
 
   useEffect(() => {
     async function fetchData(): Promise<void> {
@@ -117,7 +123,7 @@ export default (): JSX.Element => {
       getAlbumListFunc();
     }
     fetchData();
-  }, [setBanner]);
+  }, [getAlbumListFunc, getCatlistFunc]);
   return (
     <div className={styles.home}>
       <div className={styles.banner}>

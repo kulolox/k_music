@@ -15,6 +15,7 @@ const ListButton = () => {
   const dispatch = useDispatch();
   const [showContainer, setShowContainer] = useState(false);
   const [lyric, setLyric] = useState('');
+
   const toggleContainer = useCallback(val => {
     setShowContainer(val);
   }, []);
@@ -24,7 +25,7 @@ const ListButton = () => {
       const index = list.findIndex(t => t.id === id);
       dispatch(getSongUrlById({ id, index }));
     },
-    [list],
+    [list, dispatch],
   );
 
   useEffect(() => {

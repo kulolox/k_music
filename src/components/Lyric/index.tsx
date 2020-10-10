@@ -113,14 +113,14 @@ const Lyric = (props: Iprops) => {
   // 根据播放进度，确定当前歌词
   useEffect(() => {
     setActiveIndex(getTimeIndex(playedSeconds, timeRange));
-  }, [playedSeconds]);
+  }, [playedSeconds, timeRange]);
 
   // 根据当前选中歌词dom,确定滚动
   useEffect(() => {
     if (lyricDom.current.length > 0) {
       srcollToActiveLine(container, lyricDom.current[activeIndex]);
     }
-  }, [activeIndex]);
+  }, [activeIndex, container]);
 
   return (
     <ScrollContainer getContainerDom={(ref: HTMLDivElement) => setContainer(ref)}>
