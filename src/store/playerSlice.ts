@@ -30,21 +30,22 @@ const defaultState: IPlayerDefaultState = {
 };
 
 // 每次播放都重新获取歌曲url
-export const getSongUrlById = createAsyncThunk('player/getSongUrl', async (data: any) => {
-  const res = await getSongUrl(data.id);
-  return Promise.resolve({
-    data: res.data,
-    index: data.index,
-  });
-});
+export const getSongUrlById = createAsyncThunk(
+  'player/getSongUrl',
+  async (data: any, { dispatch }) => {
+    const res = await getSongUrl(data.id);
+    // 更新状态
+    dispatch(setCurrentUrl({ url: res.data.data[0].url }));
+    dispatch(setCurrentIndex({ index: data.index }));
+    return res;
+  },
+);
 
 const playerSlice = createSlice({
   name: 'player',
   initialState: defaultState,
   extraReducers: builder => {
-    builder.addCase(getSongUrlById.fulfilled, (state, action) => {
-      state.currentUrl = action.payload.data.data[0].url;
-      state.currentIndex = action.payload.index; // 更新当前序号
+    builder.addCase(getSongUrlById.fulfilled, state => {
       state.playing = true;
     });
   },
@@ -59,6 +60,9 @@ const playerSlice = createSlice({
     setPlaying: (state, action) => {
       state.playing = action.payload.playing;
     },
+    setCurrentUrl: (state, action) => {
+      state.currentUrl = action.payload.url;
+    },
     setCurrentIndex: (state, action) => {
       state.currentIndex = action.payload.index;
     },
@@ -72,6 +76,7 @@ const playerSlice = createSlice({
 export const {
   setSongList,
   setCurrentIndex,
+  setCurrentUrl,
   togglePlaying,
   setPlaying,
   setPlayedSconds,
