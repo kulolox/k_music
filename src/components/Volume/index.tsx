@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Slider, Button } from 'antd';
 import IconFont from '@components/IconFont';
 import styles from './index.module.less';
+import { useOnClickOutside } from '@/hooks';
 
 interface IProps {
   volume: number;
@@ -11,6 +12,8 @@ interface IProps {
 const Volume = (props: IProps) => {
   const [value, setVal] = useState(props.volume);
   const [showVolume, setShowVolume] = useState(false);
+  const ref = useRef(null)
+  useOnClickOutside(ref, () => setShowVolume(false))
   const onVolumeChange = useCallback(
     val => {
       setVal(val);
@@ -31,7 +34,7 @@ const Volume = (props: IProps) => {
   );
 
   return (
-    <div className={styles.volume}>
+    <div className={styles.volume} ref={ref}>
       <Button
         onClick={() => toggleVolume(!showVolume)}
         type="text"

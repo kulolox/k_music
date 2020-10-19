@@ -3,22 +3,23 @@ import { Tag, List, Button, BackTop } from 'antd';
 import { PlusSquareOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { getAlbumDetail, getSongList, getSongUrl } from '@/api';
-import { useLocalStorage } from '@/hooks'
+import { useLocalStorage, useRouter } from '@/hooks'
 import { arraySplit, checkMusic } from '@/utils/tool';
 import Duration from '@/components/Duration';
 import { getSongUrlById, setSongList } from '@/store/playerSlice';
 import { IList, IAlbum } from '@/interfaces'
 import styles from './index.module.less';
 
-const Album = (props: any) => {
+const Album = () => {
   const dispatch = useDispatch();
-  const [id] = useState(props.match.params.id);
+  // 获取路由相关数据与方法
+  const router: any = useRouter()
   const [loading, setLoading] = useState(true);
 
   // 播放列表缓存
   const setcacheList = useLocalStorage<IList[]>('cache-song-list', null)[1]
   // 专辑信息列表
-  const [album, setAlbum] = useLocalStorage<IAlbum>(id, {
+  const [album, setAlbum] = useLocalStorage<IAlbum>(router.query.id, {
     info: {
       albumId: '',
       name: '',
@@ -83,8 +84,8 @@ const Album = (props: any) => {
     [album, setAlbum],
   );
   useEffect(() => {
-    getAlbumInfo(id);
-  }, [id, getAlbumInfo]);
+    getAlbumInfo(router.query.id);
+  }, [getAlbumInfo, router.query.id]);
 
   // 载入当前歌单可播放歌曲
   const initData = useCallback(() => {

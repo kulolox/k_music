@@ -11,6 +11,7 @@ import PrevButton from './PrevButton';
 import NextButton from './NextButton';
 import TogglePlayButton from './TogglePlayButton';
 import styles from './index.module.less';
+import { useEventListener } from '@/hooks';
 
 const DEFAULT_COVER_IMAGE = 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
 
@@ -77,17 +78,10 @@ const Player = () => {
     }
   }, [currentIndex, playing]);
 
-  useEffect(() => {
-    const playerDom = RPlayer.current!;
-    playerDom.addEventListener('timeupdate', onTimeUpdate);
-    playerDom.addEventListener('ended', onEndedSong);
-    playerDom.addEventListener('durationchange', onDuration);
-    return () => {
-      playerDom.removeEventListener('timeupdate', onTimeUpdate);
-      playerDom.removeEventListener('ended', onEndedSong);
-      playerDom.removeEventListener('durationchange', onDuration);
-    };
-  }, [currentIndex, onTimeUpdate, onEndedSong, onDuration]);
+  useEventListener('timeupdate', onTimeUpdate, RPlayer)
+  useEventListener('ended', onEndedSong, RPlayer)
+  useEventListener('durationchange', onDuration, RPlayer)
+  
   return (
     <div className={styles.player}>
       <audio ref={RPlayer} src={currentUrl} preload="auto"></audio>
