@@ -92,6 +92,7 @@ const Album = (props: any) => {
     // 更新可播放歌曲列表缓存
     setcacheList(canPlayList)
     dispatch(setSongList({ data: canPlayList }));
+    dispatch(getSongUrlById({ id: canPlayList.filter(t => t.url)[0].id, index: 0, autoPlay: false }));
   }, [album.list, dispatch, setcacheList]);
 
   // 播放
