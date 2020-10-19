@@ -127,7 +127,7 @@ const Lyric = (props: Iprops) => {
       <div className={styles.lyrContainer}>
         {formatLyrics.map((line, index) => (
           <div
-            className={classNames('lyric', styles.line, {
+            className={classNames(styles.line, {
               [styles.active]: activeIndex === index,
             })}
             key={line.time + line.txt}

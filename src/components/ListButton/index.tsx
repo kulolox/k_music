@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button, Badge } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import IconFont from '@components/IconFont';
@@ -9,14 +9,11 @@ import { getSongUrlById } from '@/store/playerSlice';
 import { getSongLyric } from '@/api';
 import Lyric from '@components/Lyric';
 import styles from './index.module.less';
-import { useOnClickOutside } from '@/hooks';
 
 const ListButton = () => {
   const { list, playing, currentIndex } = useSelector((state: RootState) => state.player);
   const dispatch = useDispatch();
-  const ref = useRef(null)
   const [showContainer, setShowContainer] = useState(false);
-  useOnClickOutside(ref, () => setShowContainer(false))
   const [lyric, setLyric] = useState('');
 
   const toggleContainer = useCallback(val => {
@@ -47,7 +44,7 @@ const ListButton = () => {
     fetch();
   }, [currentIndex, list]);
   return (
-    <div className={styles.list} ref={ref}>
+    <div className={styles.list}>
       <Badge count={list.length} overflowCount={99} size="small" offset={[5, 0]}>
         <Button
           onClick={() => toggleContainer(!showContainer)}
