@@ -30,7 +30,7 @@ const Player = () => {
   const onEndedSong = useCallback(() => {
     if (currentIndex < list.length - 1) {
       const index = currentIndex + 1;
-      dispatch(getSongUrlById({ id: list[index].id, index }));
+      dispatch(getSongUrlById({ id: list[index].id, index, autoPlay: true }));
     } else {
       dispatch(setPlaying({ playing: false }));
     }

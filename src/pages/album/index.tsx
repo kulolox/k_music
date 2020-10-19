@@ -1,147 +1,116 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Tag, List, Button, BackTop } from 'antd';
 import { PlusSquareOutlined, PlayCircleOutlined } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { IInfo, IList, setInfo, setList } from '@/store/albumSlice';
+import { useDispatch } from 'react-redux';
 import { getAlbumDetail, getSongList, getSongUrl } from '@/api';
+import { useLocalStorage } from '@/hooks'
 import { arraySplit, checkMusic } from '@/utils/tool';
 import Duration from '@/components/Duration';
-import { RootState } from '@/store/rootReducer';
-import { getSongUrlById } from '@/store/playerSlice';
+import { getSongUrlById, setSongList } from '@/store/playerSlice';
+import { IList, IAlbum } from '@/interfaces'
 import styles from './index.module.less';
-import { setSongList } from '@/store/playerSlice';
 
 const Album = (props: any) => {
   const dispatch = useDispatch();
   const [id] = useState(props.match.params.id);
-  const [songListData, setSongListData] = useState<IList[]>([]);
   const [loading, setLoading] = useState(true);
-  const album = useSelector((state: RootState) => state.album);
 
-  // 获取所有歌曲播放链接
-  const getSongsUrl = useCallback(
-    async (list: IList[]) => {
-      // 添加歌曲缓存机制,以专辑id为key
-      let data: IList[] = [];
-      const cacheAlbumSongList = localStorage.getItem(id) || null;
-      if (cacheAlbumSongList) {
-        data = JSON.parse(cacheAlbumSongList);
-      } else {
-        const request = list.map(t => getSongUrl(t.id));
-        const result = await Promise.all(request);
-        data = list.map((t, index) => ({
-          ...t,
-          url: result[index].data.data[0].url, // 由于服务器在国外，一些可以播放的歌曲也取不到url
-        }));
-        localStorage.setItem(id, JSON.stringify(data));
-      }
-      setSongListData(data);
-      dispatch(
-        setList({
-          data,
-        }),
-      );
-      const cacheSongList = localStorage.getItem('cache-song-list') || null;
-      if (cacheSongList) {
-        dispatch(setSongList({ data: JSON.parse(cacheSongList) }));
-      } else {
-        const canPlayList = data.filter(t => t.url);
-        localStorage.setItem('cache-song-list', JSON.stringify(canPlayList));
-        dispatch(setSongList({ data: canPlayList }));
-      }
-      // 歌曲列表加载状态
-      setLoading(false);
+  // 播放列表缓存
+  const setcacheList = useLocalStorage<IList[]>('cache-song-list', null)[1]
+  // 专辑信息列表
+  const [album, setAlbum] = useLocalStorage<IAlbum>(id, {
+    info: {
+      albumId: '',
+      name: '',
+      nickname: '',
+      coverImgUrl: '',
+      tags: [],
+      description: '',
     },
-    [dispatch, id],
-  );
-
-  // 载入当前歌单可播放歌曲
-  const initData = useCallback(() => {
-    const canPlayList = songListData.filter(t => t.url);
-    dispatch(
-      setSongList({
-        data: canPlayList,
-      }),
-    );
-    // 更新可播放歌曲列表
-    localStorage.setItem('cache-song-list', JSON.stringify(canPlayList));
-  }, [songListData, dispatch]);
-  // 获取歌曲列表
-  const getAlbumList = useCallback(
-    async trackIds => {
-      // 切割组合歌曲id
-      const formatIds = arraySplit(trackIds.map((t: { id: string }) => t.id)).map(t => t.join(','));
-      const requests = formatIds.map(ids => getSongList(ids));
-
-      const result = await Promise.all(requests);
-
-      let songs: any[] = [];
-      let privileges: any[] = [];
-
-      result.forEach(t => {
-        songs = songs.concat(t.data.songs);
-        privileges = privileges.concat(t.data.privileges);
-      });
-
-      const list: IList[] = songs.map((t, i) => ({
-        id: t.id,
-        name: t.name,
-        seconds: t.dt / 1000,
-        authors: t.ar.map((j: { name: string }) => j.name).join('，'),
-        coverImgUrl: t.al.picUrl,
-        canPlaying: checkMusic(privileges[i]), // 先通过checkMusic筛一遍
-        url: null,
-      }));
-      // 后台获取歌曲url
-      getSongsUrl(list);
-    },
-    [getSongsUrl],
-  );
+    list: [],
+  })
 
   // 获取歌单详情
   const getAlbumInfo = useCallback(
     async id => {
-      const { data } = await getAlbumDetail(id);
-      const { playlist } = data;
-      const info: IInfo = {
-        albumId: playlist.id,
-        name: playlist.name,
-        nickname: playlist.creator.nickname,
-        coverImgUrl: playlist.coverImgUrl,
-        description: playlist.description,
-        tags: playlist.tags,
-      };
-      dispatch(
-        setInfo({
-          data: info,
-        }),
-      );
-      getAlbumList(playlist.trackIds);
+      // 如果缓存有数据，则不走请求逻辑
+      if (!album.info.albumId) {
+        const { data: { playlist } } = await getAlbumDetail(id);
+
+        const albumData: IAlbum = {
+          info: {
+            albumId: id,
+            name: playlist.name,
+            nickname: playlist.creator.nickname,
+            coverImgUrl: playlist.coverImgUrl,
+            description: playlist.description,
+            tags: playlist.tags,
+          },
+          list: [],
+        }
+  
+        // 切割组合歌曲id
+        const formatIds = arraySplit(playlist.trackIds.map((t: { id: string }) => t.id)).map(t => t.join(','));
+        
+        const requests = formatIds.map(ids => getSongList(ids));
+        const result = await Promise.all(requests);
+  
+        let songs: any[] = [];
+        let privileges: any[] = [];
+        result.forEach(t => {
+          songs = songs.concat(t.data.songs);
+          privileges = privileges.concat(t.data.privileges);
+        });
+  
+        albumData.list = songs.map((t, i) => ({
+          id: t.id,
+          name: t.name,
+          seconds: t.dt / 1000,
+          authors: t.ar.map((j: { name: string }) => j.name).join('，'),
+          coverImgUrl: t.al.picUrl,
+          canPlaying: checkMusic(privileges[i]), // 先通过checkMusic筛一遍
+          url: null,
+        }));
+
+        // 获取歌曲url
+        const urlRequests = albumData.list.map(t => getSongUrl(t.id));
+        const urlResults = await Promise.all(urlRequests);
+        albumData.list.map((t, index) => t.url = urlResults[index].data.data[0].url)
+        setAlbum(albumData)
+      }
+      setLoading(false)
     },
-    [getAlbumList, dispatch],
+    [album, setAlbum],
   );
+  useEffect(() => {
+    getAlbumInfo(id);
+  }, [id, getAlbumInfo]);
+
+  // 载入当前歌单可播放歌曲
+  const initData = useCallback(() => {
+    const canPlayList = album.list.filter(t => t.url);
+    // 更新可播放歌曲列表缓存
+    setcacheList(canPlayList)
+    dispatch(setSongList({ data: canPlayList }));
+  }, [album.list, dispatch, setcacheList]);
 
   // 播放
   const playSong = useCallback(() => {
     initData();
-    dispatch(getSongUrlById({ id: songListData.filter(t => t.url)[0].id, index: 0 }));
-  }, [songListData, initData, dispatch]);
+    dispatch(getSongUrlById({ id: album.list.filter(t => t.url)[0].id, index: 0, autoPlay: true }));
+  }, [album.list, initData, dispatch]);
 
   const playSongById = useCallback(
     id => {
       // 载入数据
       initData();
       // 根据id播放
-      const index = songListData.findIndex(t => t.id === id);
-      dispatch(getSongUrlById({ id, index }));
+      const index = album.list.findIndex(t => t.id === id);
+      dispatch(getSongUrlById({ id, index, autoPlay: true }));
     },
-    [songListData, initData, dispatch],
+    [album.list, initData, dispatch],
   );
-
-  useEffect(() => {
-    getAlbumInfo(id);
-  }, [id, getAlbumInfo]);
-
+  
   return (
     <div className={styles.album}>
       <div className={styles.head}>

@@ -1,24 +1,30 @@
 import React, { Fragment, useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import PlayerBox from '@components/PlayerBox';
-import './App.css';
 import { useDispatch } from 'react-redux';
-import { getSongUrlById, setSongList } from './store/playerSlice';
+import { useLocalStorage } from '@/hooks'
+import {
+  getSongUrlById,
+  //  getSongUrlById, 
+  setSongList } from './store/playerSlice';
+import './App.css';
+import { IList } from '@/interfaces';
 
 const Home = React.lazy(() => import('@pages/home'));
 const Album = React.lazy(() => import('@pages/album'));
 
 function App(): JSX.Element {
   const dispatch = useDispatch();
+  const [data] = useLocalStorage<IList[]>('cache-song-list', null)
   // 初始化播放器数据
   useEffect(() => {
-    const cache = localStorage.getItem('cache-song-list') || null;
-    if (cache) {
-      const data = JSON.parse(cache);
+    if (data) {
+      // 载入缓存中的数据
       dispatch(setSongList({ data }));
-      dispatch(getSongUrlById({ index: 0, id: data[0].id }));
+      dispatch(getSongUrlById({ id: data[0].id, index: 0, autoPlay: false }))
     }
-  }, [dispatch]);
+  }, [data, dispatch]);
+
   return (
     <Fragment>
       <Router>

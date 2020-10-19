@@ -1,15 +1,6 @@
 import { getSongUrl } from '@/api';
+import { IList } from '@/interfaces';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-
-export interface IList {
-  id: number; // 歌曲id
-  name: string; // 歌曲名
-  seconds: number; // 歌曲时长
-  authors: string; // 歌曲作者
-  coverImgUrl: string; // 歌曲封面
-  canPlaying: boolean; // 歌曲是否可以播放
-  url: string;
-}
 
 interface IPlayerDefaultState {
   currentIndex: number; // 当前播放歌曲
@@ -37,7 +28,9 @@ export const getSongUrlById = createAsyncThunk(
     // 更新状态
     dispatch(setCurrentUrl({ url: res.data.data[0].url }));
     dispatch(setCurrentIndex({ index: data.index }));
-    return res;
+    return {
+      autoPlay: data.autoPlay,
+    };
   },
 );
 
@@ -45,8 +38,8 @@ const playerSlice = createSlice({
   name: 'player',
   initialState: defaultState,
   extraReducers: builder => {
-    builder.addCase(getSongUrlById.fulfilled, state => {
-      state.playing = true;
+    builder.addCase(getSongUrlById.fulfilled, (state, action) => {
+      state.playing = action.payload.autoPlay;
     });
   },
   reducers: {

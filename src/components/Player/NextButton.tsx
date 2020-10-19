@@ -18,7 +18,7 @@ const NextButton = (props: IProps) => {
 
   const nextSong = useCallback(() => {
     const index = currentIndex + 1;
-    dispatch(getSongUrlById({ id: list[index].id, index }));
+    dispatch(getSongUrlById({ id: list[index].id, index, autoPlay: true }));
   }, [list, currentIndex, dispatch]);
 
   return (
