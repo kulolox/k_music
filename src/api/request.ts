@@ -26,9 +26,9 @@ const request = axios.create(config);
 
 // 添加请求拦截器
 request.interceptors.request.use(
-  config => {
+  async config => {
     removePending(config);
-    config.cancelToken = new cancelToken(c => {
+    config.cancelToken = await new cancelToken(c => {
       pending.push({
         url: config.url + '&request_type=' + config.method,
         cancel: c,

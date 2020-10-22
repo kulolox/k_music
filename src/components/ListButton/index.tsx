@@ -23,7 +23,7 @@ const ListButton = () => {
   const play = useCallback(
     id => {
       const index = list.findIndex(t => t.id === id);
-      dispatch(getSongUrlById({ id, index }));
+      dispatch(getSongUrlById({ id, index, autoPlay: true }));
     },
     [list, dispatch],
   );
@@ -43,6 +43,7 @@ const ListButton = () => {
     };
     fetch();
   }, [currentIndex, list]);
+  
   return (
     <div className={styles.list}>
       <Badge count={list.length} overflowCount={99} size="small" offset={[5, 0]}>

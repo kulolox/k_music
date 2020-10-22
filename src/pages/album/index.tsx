@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { Tag, List, Button, BackTop } from 'antd';
 import { PlusSquareOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
@@ -30,6 +30,8 @@ const Album = () => {
     },
     list: [],
   })
+
+  const canPlayList = useMemo(() => album.list.filter(t => t.url), [album.list])
 
   // 获取歌单详情
   const getAlbumInfo = useCallback(
@@ -89,28 +91,27 @@ const Album = () => {
 
   // 载入当前歌单可播放歌曲
   const initData = useCallback(() => {
-    const canPlayList = album.list.filter(t => t.url);
     // 更新可播放歌曲列表缓存
     setcacheList(canPlayList)
     dispatch(setSongList({ data: canPlayList }));
-    dispatch(getSongUrlById({ id: canPlayList.filter(t => t.url)[0].id, index: 0, autoPlay: false }));
-  }, [album.list, dispatch, setcacheList]);
+    dispatch(getSongUrlById({ id: canPlayList[0].id, index: 0, autoPlay: false }));
+  }, [canPlayList, dispatch, setcacheList]);
 
   // 播放
   const playSong = useCallback(() => {
     initData();
-    dispatch(getSongUrlById({ id: album.list.filter(t => t.url)[0].id, index: 0, autoPlay: true }));
-  }, [album.list, initData, dispatch]);
+    dispatch(getSongUrlById({ id: canPlayList[0].id, index: 0, autoPlay: true }));
+  }, [initData, dispatch, canPlayList]);
 
   const playSongById = useCallback(
     id => {
       // 载入数据
       initData();
       // 根据id播放
-      const index = album.list.findIndex(t => t.id === id);
+      const index = canPlayList.findIndex(t => t.id === id);
       dispatch(getSongUrlById({ id, index, autoPlay: true }));
     },
-    [album.list, initData, dispatch],
+    [initData, canPlayList, dispatch],
   );
   
   return (
