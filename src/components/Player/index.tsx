@@ -78,6 +78,11 @@ const Player = () => {
     }
   }, [currentIndex, playing]);
 
+  // 但切换歌曲时，重置本地播放进度
+  useEffect(() => {
+    setProgressValue(0);
+  }, [currentIndex]);
+
   useEventListener('timeupdate', onTimeUpdate, RPlayer)
   useEventListener('ended', onEndedSong, RPlayer)
   useEventListener('durationchange', onDuration, RPlayer)
