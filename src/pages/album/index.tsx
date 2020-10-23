@@ -182,7 +182,7 @@ const Album = () => {
           )}
         />
       </div>
-      <BackTop visibilityHeight={600} />
+      <BackTop className={styles.backTop} visibilityHeight={600} />
     </div>
   );
 };

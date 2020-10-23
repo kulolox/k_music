@@ -40,6 +40,7 @@ const Player = () => {
   // audio ontimeupdate事件每隔250ms触发一次
   const onTimeUpdate = useCallback(() => {
     dispatch(setPlayedSconds({ playedSeconds: RPlayer.current!.currentTime }));
+    // 防止播放对拖动进度的影响，触发拖动进度条时seeking为true，不在更新进度条，拖动操作完成将seeking置为false
     if (!seeking) {
       setProgressValue(RPlayer.current!.currentTime);
     }
@@ -49,25 +50,31 @@ const Player = () => {
     setDuration(RPlayer.current!.duration);
   }, []);
 
-  // 本地状态
+  // 音量
   const onVolumeChange = useCallback(val => {
     setVolume(val);
   }, []);
-
-  const progressChange = useCallback(val => {
-    setSeeking(true);
-    setProgressValue(val);
-  }, []);
-
-  const progressAfterChange = useCallback(val => {
-    setSeeking(false);
-    RPlayer.current!.currentTime = val;
-  }, []);
-
   // 音量控制
   useEffect(() => {
     RPlayer.current!.volume = volume / 100;
   }, [volume]);
+
+  // 进度条
+  const progressChange = useCallback(val => {
+    console.log('progressChange')
+    setSeeking(true);
+    setProgressValue(val);
+  }, []);
+  const progressAfterChange = useCallback(val => {
+    console.log('progressAfterChange')
+    setSeeking(false);
+    RPlayer.current!.currentTime = val;
+  }, []);
+  // 当切换歌曲时，重置本地播放进度
+  useEffect(() => {
+    setProgressValue(0);
+    setSeeking(false); // 歌曲自然播完会触发progressChange，而progressAfterChange不一定会触发，所以切换歌曲时人为触发seeking为false,防止onTimeUpdate，本地进度条无法更新
+  }, [currentIndex]);
 
   // 根据播放状态及当前歌曲切换播放暂停
   useEffect(() => {
@@ -78,15 +85,10 @@ const Player = () => {
     }
   }, [currentIndex, playing]);
 
-  // 但切换歌曲时，重置本地播放进度
-  useEffect(() => {
-    setProgressValue(0);
-  }, [currentIndex]);
-
   useEventListener('timeupdate', onTimeUpdate, RPlayer)
   useEventListener('ended', onEndedSong, RPlayer)
   useEventListener('durationchange', onDuration, RPlayer)
-  
+  console.log('progressValue:', progressValue)
   return (
     <div className={styles.player}>
       <audio ref={RPlayer} src={currentUrl} preload="auto"></audio>
@@ -115,6 +117,7 @@ const Player = () => {
                 onAfterChange={progressAfterChange}
                 onChange={progressChange}
                 defaultValue={0}
+                step={0.1}
                 tooltipVisible={false}
                 value={progressValue}
                 max={Math.floor(list[currentIndex]?.seconds)}
