@@ -61,12 +61,10 @@ const Player = () => {
 
   // 进度条
   const progressChange = useCallback(val => {
-    console.log('progressChange')
     setSeeking(true);
     setProgressValue(val);
   }, []);
   const progressAfterChange = useCallback(val => {
-    console.log('progressAfterChange')
     setSeeking(false);
     RPlayer.current!.currentTime = val;
   }, []);
@@ -88,7 +86,6 @@ const Player = () => {
   useEventListener('timeupdate', onTimeUpdate, RPlayer)
   useEventListener('ended', onEndedSong, RPlayer)
   useEventListener('durationchange', onDuration, RPlayer)
-  console.log('progressValue:', progressValue)
   return (
     <div className={styles.player}>
       <audio ref={RPlayer} src={currentUrl} preload="auto"></audio>
