@@ -1,4 +1,8 @@
 .list {
+  .button {
+    position: relative;
+    z-index: 1;
+  }
   .container {
     position: absolute;
     z-index: 0;
@@ -8,6 +12,9 @@
     transform: translateX(-50%);
     background-color: rgba(0, 0, 0, 0.9);
     overflow: hidden;
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.5s ease;
     .backImg {
       position: absolute;
       z-index: -1;
@@ -86,5 +93,13 @@
         border-bottom: 1px solid #000;
       }
     }
+  }
+  .hide {
+    background-color: rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    z-index: -1;
+    bottom: 0;
+    opacity: 0;
+    visibility: hidden;
   }
 }

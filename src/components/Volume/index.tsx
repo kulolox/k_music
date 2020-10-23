@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Slider, Button } from 'antd';
+import classNames from 'classnames'
 import IconFont from '@components/IconFont';
 import styles from './index.module.less';
 import { useOnClickOutside } from '@/hooks';
@@ -40,17 +41,15 @@ const Volume = (props: IProps) => {
         type="text"
         icon={<IconFont type="icon-volume" />}
       />
-      {showVolume && (
-        <div className={styles.content}>
-          <Slider
-            value={value}
-            min={0}
-            max={100}
-            onChange={onVolumeChange}
-            onAfterChange={onVolumeAfterChange}
-          />
-        </div>
-      )}
+      <div className={classNames(styles.content, { [styles.hide]: !showVolume}) }>
+        <Slider
+          value={value}
+          min={0}
+          max={100}
+          onChange={onVolumeChange}
+          onAfterChange={onVolumeAfterChange}
+        />
+      </div>
     </div>
   );
 };
