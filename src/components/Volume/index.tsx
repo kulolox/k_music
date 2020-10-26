@@ -1,26 +1,26 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Slider, Button } from 'antd';
-import classNames from 'classnames'
+import classNames from 'classnames';
 import IconFont from '@components/IconFont';
-import styles from './index.module.less';
 import { useOnClickOutside } from '@/hooks';
+import { changeVolume } from '@/store/playerSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/store/rootReducer';
+import styles from './index.module.less';
 
-interface IProps {
-  volume: number;
-  onChange: Function;
-}
+const Volume = () => {
+  const { volume } = useSelector((state: RootState) => state.player);
+  const dispatch = useDispatch();
 
-const Volume = (props: IProps) => {
-  const [value, setVal] = useState(props.volume);
+  const ref = useRef(null);
   const [showVolume, setShowVolume] = useState(false);
-  const ref = useRef(null)
-  useOnClickOutside(ref, () => setShowVolume(false))
+  useOnClickOutside(ref, () => setShowVolume(false));
+
   const onVolumeChange = useCallback(
     val => {
-      setVal(val);
-      props.onChange(val);
+      dispatch(changeVolume({ volume: val }));
     },
-    [props],
+    [dispatch],
   );
 
   const toggleVolume = useCallback(val => {
@@ -41,9 +41,9 @@ const Volume = (props: IProps) => {
         type="text"
         icon={<IconFont type="icon-volume" />}
       />
-      <div className={classNames(styles.content, { [styles.hide]: !showVolume}) }>
+      <div className={classNames(styles.content, { [styles.hide]: !showVolume })}>
         <Slider
-          value={value}
+          value={volume}
           min={0}
           max={100}
           onChange={onVolumeChange}

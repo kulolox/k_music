@@ -1,17 +1,15 @@
 module.exports = {
-  // extends: ['prettier', 'plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended', 'prettier/react'],
-  // env: {
-  //   browser: true,
-  //   node: true,
-  //   jasmine: true,
-  //   es6: true
-  // },
   extends: ['prettier', 'plugin:react/recommended', 'plugin:import/typescript', 'prettier/react'],
   env: {
     browser: true,
     node: true,
     jasmine: true,
     es6: true,
+  },
+  settings: {
+    react: {
+      version: "detect"
+    }
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {

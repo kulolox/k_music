@@ -1,0 +1,20 @@
+.controller {
+  display: flex;
+  align-items: center;
+  .button {
+    padding: 0 8px;
+    :global {
+      .ant-btn-ghost[disabled],
+      .ant-btn-ghost[disabled]:hover,
+      .ant-btn-ghost[disabled]:focus,
+      .ant-btn-ghost[disabled]:active {
+        opacity: 0.6;
+        color: #fff;
+        background: transparent;
+      }
+    }
+    svg {
+      color: #fff;
+    }
+  }
+}
