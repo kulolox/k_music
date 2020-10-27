@@ -86,4 +86,4 @@ npm run dev
 
 - 播放器
 
-  ![详情页](/IMAGE/player.png)
+  ![播放器](/IMAGE/player.png)
