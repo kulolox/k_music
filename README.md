@@ -73,3 +73,17 @@ npm run dev
 - hooks 理解不够透彻，开始没有开启'react-hooks/exhaustive-deps': 'warn',导致很多 useEffect、useCallback 的依赖没有写，出现了一些很难定位的 bug，使用 hooks 请一定打开该规则。
 
 - nginx 问题，这个应该所有单页面应用都会有。对于 hash 模式的路由无需配置 nginx，但对于 browser 模式的路由，二级页面刷新时会出现 404 问题，网上已经有很多教程了。但我想说的是，steveltn/https-portal 这个镜像的 nignx 配置文件是/ect/nginx/conf.d/[yourProjectName].ssl.conf,而不是/ect/nginx/conf.d/[yourProjectName].conf。这个东西找了特别久，因为该容器为我们配置了 ssl 证书，它走的端口是 443，而不是 80。
+
+## 项目截图
+
+- 首页
+
+  ![首页](/IMAGE/home.png)
+
+- 详情页
+
+  ![详情页](/IMAGE/album.png)
+
+- 播放器
+
+  ![详情页](/IMAGE/player.png)
