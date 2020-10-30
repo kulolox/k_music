@@ -29,6 +29,8 @@ export interface IInfo {
   nickname: string;
   coverImgUrl: string;
   description: string;
+  createTime: number,
+  avatarUrl: string,
   tags: string[];
 }
 

@@ -16,20 +16,6 @@ export default (props: IProps): JSX.Element => {
   const [showCatList, setShowCatList] = useState(false);
   // 分类表
   const [catList, setCatList] = useState<ICat[]>([]);
-  // 获取风格列表
-  const getCatlistFunc = useCallback(async () => {
-    const { data } = await getCatlist();
-    const { categories, sub } = data;
-    const list: ICat[] = [];
-    Object.keys(categories).forEach(t => {
-      list.push({
-        type: parseInt(t),
-        typeName: categories[t],
-        list: sub.filter((s: { category: number }) => s.category === parseInt(t)),
-      });
-    });
-    setCatList(list);
-  }, []);
 
   const onSelect = useCallback(
     val => {
@@ -40,22 +26,27 @@ export default (props: IProps): JSX.Element => {
   );
 
   useEffect(() => {
-    async function fetchData(): Promise<void> {
-      // 获取歌单分类
-      getCatlistFunc();
+    async function fetchData() {
+      const { data } = await getCatlist();
+      const { categories, sub } = data;
+      const list: ICat[] = [];
+      Object.keys(categories).forEach(t => {
+        list.push({
+          type: parseInt(t),
+          typeName: categories[t],
+          list: sub.filter((s: { category: number }) => s.category === parseInt(t)),
+        });
+      });
+      setCatList(list);
     }
     fetchData();
-  }, [getCatlistFunc]);
+  }, []);
+
   return (
     <div className={styles.category}>
       <Popover
         placement="topLeft"
         visible={showCatList}
-        title={
-          <Button size="small" onClick={() => onSelect('全部')}>
-            全部风格
-          </Button>
-        }
         content={<List catList={catList} selectedCat={props.currentCat} onSelect={onSelect} />}
         trigger="click"
       >

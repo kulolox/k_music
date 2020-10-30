@@ -1,18 +1,19 @@
 .catList {
-  width: 948px;
+  width: 900px;
   .catItem {
     display: flex;
-
+    flex-direction: column;
     &:not(:last-of-type) {
       margin-bottom: 8px;
     }
     .catType {
-      margin-right: 8px;
+      margin-left: 8px;
       color: #000;
       font-weight: bold;
       white-space: nowrap;
     }
     .catContent {
+      margin-top: 4px;
       display: flex;
       align-items: center;
       flex-wrap: wrap;

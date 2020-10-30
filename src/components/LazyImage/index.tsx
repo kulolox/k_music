@@ -5,6 +5,7 @@ interface IProps {
   src: string;
   width: string;
   height: string;
+  border?: boolean;
 }
 
 const LazyImage = (props: IProps) => {
@@ -22,6 +23,7 @@ const LazyImage = (props: IProps) => {
       style={{
         width: props.width,
         height: props.height,
+        border: props.border ? '1px solid #f1f1f1' : 'none',
       }}
       alt=""
     />

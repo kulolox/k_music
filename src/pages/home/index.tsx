@@ -9,6 +9,7 @@ import LazyImage from '@/components/LazyImage';
 import Category from '@/components/Category';
 import '@/css/animation.less';
 import styles from './index.module.less';
+import Loadinger from '@/components/Loadinger';
 
 const LIMIT = 35;
 
@@ -57,7 +58,7 @@ const initalState: IState = {
   pageNo: 1,
   loading: false,
   totalCount: 0,
-  cat: '全部',
+  cat: '华语',
   albumList: [],
 };
 
@@ -65,15 +66,57 @@ export default (): JSX.Element => {
   const [state, dispatch] = useImmerReducer(homeReducer, initalState);
   const { banners, pageNo, loading, totalCount, cat, albumList } = state;
 
+  // 分页变动
+  const onPageNoChange = useCallback(
+    pageIndex => {
+      dispatch({
+        type: 'PAGE_CHANGE',
+        payload: pageIndex,
+      });
+    },
+    [dispatch],
+  );
+
+  // 风格切换
+  const catSelect = useCallback(
+    cat => {
+      dispatch({
+        type: 'CAT_SELECT',
+        payload: cat,
+      });
+    },
+    [dispatch],
+  );
+
+  // 获取轮播图
+  useEffect(() => {
+    async function fetchData(): Promise<void> {
+      // 获取顶部轮播图
+      const { data } = await getBanner(0);
+      dispatch({
+        type: 'GET_BANNER',
+        payload: data.banners.map((t: IBanner) => ({
+          scm: t.scm,
+          imageUrl: t.imageUrl,
+        })),
+      });
+    }
+    fetchData();
+  }, [dispatch]);
+
   // 获取专辑列表
-  const getAlbumListFunc = useCallback(
-    async (params = { cat: cat, limit: LIMIT, offset: 0 }) => {
+  useEffect(() => {
+    async function fetchData() {
       // loading开始
       dispatch({
         type: 'SET_PAGE_LOADING',
         payload: true,
       });
-      const { data } = await getAlbumList(params);
+      const { data } = await getAlbumList({
+        cat,
+        limit: LIMIT,
+        offset: (pageNo - 1) * LIMIT,
+      });
       // 更新歌单列表
       dispatch({
         type: 'GET_ALBUM_LIST',
@@ -93,58 +136,9 @@ export default (): JSX.Element => {
         type: 'SET_PAGE_LOADING',
         payload: false,
       });
-    },
-    [cat, dispatch],
-  );
-
-  // 分页变动
-  const onPageNoChange = useCallback(
-    pageIndex => {
-      dispatch({
-        type: 'PAGE_CHANGE',
-        payload: pageIndex,
-      });
-      getAlbumListFunc({
-        cat,
-        limit: LIMIT,
-        offset: pageIndex * LIMIT,
-      });
-    },
-    [cat, dispatch, getAlbumListFunc],
-  );
-
-  // 风格切换
-  const catSelect = useCallback(
-    cat => {
-      dispatch({
-        type: 'CAT_SELECT',
-        payload: cat,
-      });
-      getAlbumListFunc({
-        cat,
-        limit: LIMIT,
-        offset: 0,
-      });
-    },
-    [dispatch, getAlbumListFunc],
-  );
-
-  useEffect(() => {
-    async function fetchData(): Promise<void> {
-      // 获取顶部轮播图
-      const { data } = await getBanner(0);
-      dispatch({
-        type: 'GET_BANNER',
-        payload: data.banners.map((t: IBanner) => ({
-          scm: t.scm,
-          imageUrl: t.imageUrl,
-        })),
-      });
-      // 初始化歌单数据
-      getAlbumListFunc();
     }
     fetchData();
-  }, [dispatch, getAlbumListFunc]);
+  }, [cat, dispatch, pageNo]);
 
   console.log('loading:', loading);
   return (
@@ -161,22 +155,27 @@ export default (): JSX.Element => {
       <div className={styles.albumBox}>
         <Category currentCat={cat} catSelect={catSelect} />
         <div className={styles.list}>
-          {albumList.map(album => (
-            <Link key={album.id} className={styles.album} to={`/album/${album.id}`}>
-              <div className="hoverBox">
-                <div className={styles.cover}>
-                  <LazyImage src={album.coverImgUrl} width="100%" height="auto" />
-                  <div className={styles.playCount}>
-                    <IconFont type="icon-play-count" style={{ fontSize: 16, marginRight: 2 }} />
-                    <span>{album.playCount}</span>
+          {loading ? (
+            <Loadinger text="Loading..." />
+          ) : (
+            albumList.map(album => (
+              <Link key={album.id} className={styles.album} to={`/album/${album.id}`}>
+                <div className="hoverBox">
+                  <div className={styles.cover}>
+                    <LazyImage src={album.coverImgUrl} width="100%" height="auto" />
+                    <div className={styles.playCount}>
+                      <IconFont type="icon-play-count" style={{ fontSize: 16, marginRight: 2 }} />
+                      <span>{album.playCount}</span>
+                    </div>
+                    <div className={styles.creatorName}>{album.creator.nickname}</div>
                   </div>
-                  <div className={styles.creatorName}>{album.creator.nickname}</div>
+                  <div className={styles.name}>{album.name}</div>
                 </div>
-                <div className={styles.name}>{album.name}</div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))
+          )}
         </div>
+
         <Pagination
           className={styles.pagination}
           defaultCurrent={1}
