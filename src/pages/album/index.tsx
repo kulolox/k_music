@@ -3,23 +3,23 @@ import { Tag, List, Button, BackTop } from 'antd';
 import { PlusSquareOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { getAlbumDetail, getSongList, getSongUrl } from '@/api';
-import { useLocalStorage, useRouter } from '@/hooks'
+import { useLocalStorage, useRouter } from '@/hooks';
 import { arraySplit, checkMusic } from '@/utils/tool';
 import Duration from '@/components/Duration';
 import { getSongUrlById, setSongList } from '@/store/playerSlice';
-import { IList, IAlbum } from '@/interfaces'
+import { ISong, IAlbumDetail } from '@/interfaces';
 import styles from './index.module.less';
 
 const Album = () => {
   const dispatch = useDispatch();
   // 获取路由相关数据与方法
-  const router: any = useRouter()
+  const router: any = useRouter();
   const [loading, setLoading] = useState(true);
 
   // 播放列表缓存
-  const setcacheList = useLocalStorage<IList[]>('cache-song-list', null)[1]
+  const setcacheList = useLocalStorage<ISong[]>('cache-song-list', null)[1];
   // 专辑信息列表
-  const [album, setAlbum] = useLocalStorage<IAlbum>(router.query.id, {
+  const [album, setAlbum] = useLocalStorage<IAlbumDetail>(router.query.id, {
     info: {
       albumId: '',
       name: '',
@@ -29,18 +29,20 @@ const Album = () => {
       description: '',
     },
     list: [],
-  })
+  });
 
-  const canPlayList = useMemo(() => album.list.filter(t => t.url), [album.list])
+  const canPlayList = useMemo(() => album.list.filter(t => t.url), [album.list]);
 
   // 获取歌单详情
   const getAlbumInfo = useCallback(
     async id => {
       // 如果缓存有数据，则不走请求逻辑
       if (!album.info.albumId) {
-        const { data: { playlist } } = await getAlbumDetail(id);
+        const {
+          data: { playlist },
+        } = await getAlbumDetail(id);
 
-        const albumData: IAlbum = {
+        const albumData: IAlbumDetail = {
           info: {
             albumId: id,
             name: playlist.name,
@@ -50,21 +52,23 @@ const Album = () => {
             tags: playlist.tags,
           },
           list: [],
-        }
-  
+        };
+
         // 切割组合歌曲id
-        const formatIds = arraySplit(playlist.trackIds.map((t: { id: string }) => t.id)).map(t => t.join(','));
-        
+        const formatIds = arraySplit(playlist.trackIds.map((t: { id: string }) => t.id)).map(t =>
+          t.join(','),
+        );
+
         const requests = formatIds.map(ids => getSongList(ids));
         const result = await Promise.all(requests);
-  
+
         let songs: any[] = [];
         let privileges: any[] = [];
         result.forEach(t => {
           songs = songs.concat(t.data.songs);
           privileges = privileges.concat(t.data.privileges);
         });
-  
+
         albumData.list = songs.map((t, i) => ({
           id: t.id,
           name: t.name,
@@ -78,10 +82,10 @@ const Album = () => {
         // 获取歌曲url
         const urlRequests = albumData.list.map(t => getSongUrl(t.id));
         const urlResults = await Promise.all(urlRequests);
-        albumData.list.map((t, index) => t.url = urlResults[index].data.data[0].url)
-        setAlbum(albumData)
+        albumData.list.map((t, index) => (t.url = urlResults[index].data.data[0].url));
+        setAlbum(albumData);
       }
-      setLoading(false)
+      setLoading(false);
     },
     [album, setAlbum],
   );
@@ -92,7 +96,7 @@ const Album = () => {
   // 载入当前歌单可播放歌曲
   const initData = useCallback(() => {
     // 更新可播放歌曲列表缓存
-    setcacheList(canPlayList)
+    setcacheList(canPlayList);
     dispatch(setSongList({ data: canPlayList }));
     dispatch(getSongUrlById({ id: canPlayList[0].id, index: 0, autoPlay: false }));
   }, [canPlayList, dispatch, setcacheList]);
@@ -113,7 +117,7 @@ const Album = () => {
     },
     [initData, canPlayList, dispatch],
   );
-  
+
   return (
     <div className={styles.album}>
       <div className={styles.head}>

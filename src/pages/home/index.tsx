@@ -1,129 +1,152 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Popover, Button, Carousel, Pagination } from 'antd';
-import { getAlbumList, getCatlist, getBanner } from '@/api';
-import CatList from '@/components/CatList';
+import { Carousel, Pagination } from 'antd';
+import { useImmerReducer } from 'use-immer';
+import { getAlbumList, getBanner } from '@/api';
+import { IBanner, IAblum } from '@/interfaces';
 import IconFont from '@/components/IconFont';
-import styles from './index.module.less';
-import '@/css/animation.less';
 import LazyImage from '@/components/LazyImage';
-
-interface IBanner {
-  scm: string;
-  imageUrl: string;
-}
-
-export interface ICatList {
-  type: number;
-  typeName: string;
-  list: [];
-}
-
-interface IAblumList {
-  id: string;
-  coverImgUrl: string;
-  playCount: number;
-  name: string;
-  creator: any;
-}
+import Category from '@/components/Category';
+import '@/css/animation.less';
+import styles from './index.module.less';
 
 const LIMIT = 35;
 
-export default (): JSX.Element => {
-  const [banners, setBanner] = useState<IBanner[]>([]);
-  // 页码
-  const [pageNo, setPageNo] = useState(1);
-  const [showCatList, setShowCatList] = useState(false);
-  // 总专辑数
-  const [totalAlbum, setTotalAlbum] = useState(0);
-  // 当前风格
-  const [cat, setCat] = useState('全部');
-  const [catList, setCatList] = useState<ICatList[]>([]);
-  // 歌单数据
-  const [albumList, setAlbumList] = useState<IAblumList[]>([]);
+// userReducer 整个多个state
+function homeReducer(state: any, action: any) {
+  switch (action.type) {
+    case 'GET_BANNER': {
+      state.banners = action.payload;
+      return;
+    }
+    case 'GET_ALBUM_LIST': {
+      const { albumList, totalCount } = action.payload;
+      state.albumList = albumList;
+      state.totalCount = totalCount;
+      return;
+    }
+    case 'CAT_SELECT': {
+      state.pageNo = 1;
+      state.cat = action.payload;
+      return;
+    }
+    case 'PAGE_CHANGE': {
+      state.pageNo = action.payload;
+      return;
+    }
+    case 'SET_PAGE_LOADING': {
+      state.loading = action.payload;
+      return;
+    }
+    default:
+      return;
+  }
+}
 
-  // 获取风格列表
-  const getCatlistFunc = useCallback(async () => {
-    const { data } = await getCatlist();
-    const { categories, sub } = data;
-    const rec: ICatList[] = [];
-    Object.keys(categories).forEach(t => {
-      rec.push({
-        type: parseInt(t),
-        typeName: categories[t],
-        list: sub.filter((s: { category: number }) => s.category === parseInt(t)),
-      });
-    });
-    setCatList(rec);
-  }, []);
+interface IState {
+  banners: IBanner[];
+  pageNo: number;
+  loading: boolean;
+  totalCount: number;
+  cat: string;
+  albumList: IAblum[];
+}
+
+const initalState: IState = {
+  banners: [],
+  pageNo: 1,
+  loading: false,
+  totalCount: 0,
+  cat: '全部',
+  albumList: [],
+};
+
+export default (): JSX.Element => {
+  const [state, dispatch] = useImmerReducer(homeReducer, initalState);
+  const { banners, pageNo, loading, totalCount, cat, albumList } = state;
 
   // 获取专辑列表
   const getAlbumListFunc = useCallback(
     async (params = { cat: cat, limit: LIMIT, offset: 0 }) => {
+      // loading开始
+      dispatch({
+        type: 'SET_PAGE_LOADING',
+        payload: true,
+      });
       const { data } = await getAlbumList(params);
-      setAlbumList(
-        data.playlists.map((album: IAblumList) => ({
-          id: album.id,
-          coverImgUrl: album.coverImgUrl,
-          playCount: album.playCount,
-          name: album.name,
-          creator: album.creator,
-        })),
-      );
-      setTotalAlbum(data.total);
+      // 更新歌单列表
+      dispatch({
+        type: 'GET_ALBUM_LIST',
+        payload: {
+          albumList: data.playlists.map((album: IAblum) => ({
+            id: album.id,
+            coverImgUrl: album.coverImgUrl,
+            playCount: album.playCount,
+            name: album.name,
+            creator: album.creator,
+          })),
+          totalCount: data.total,
+        },
+      });
+      // loading结束
+      dispatch({
+        type: 'SET_PAGE_LOADING',
+        payload: false,
+      });
     },
-    [cat],
+    [cat, dispatch],
   );
 
   // 分页变动
   const onPageNoChange = useCallback(
     pageIndex => {
-      const params = {
+      dispatch({
+        type: 'PAGE_CHANGE',
+        payload: pageIndex,
+      });
+      getAlbumListFunc({
         cat,
         limit: LIMIT,
         offset: pageIndex * LIMIT,
-      };
-      setPageNo(pageIndex);
-      getAlbumListFunc(params);
+      });
     },
-    [cat, getAlbumListFunc],
+    [cat, dispatch, getAlbumListFunc],
   );
 
   // 风格切换
   const catSelect = useCallback(
     cat => {
-      const params = {
+      dispatch({
+        type: 'CAT_SELECT',
+        payload: cat,
+      });
+      getAlbumListFunc({
         cat,
         limit: LIMIT,
         offset: 0,
-      };
-      setShowCatList(false);
-      setCat(cat);
-      setPageNo(1);
-      getAlbumListFunc(params);
+      });
     },
-    [getAlbumListFunc],
+    [dispatch, getAlbumListFunc],
   );
 
   useEffect(() => {
     async function fetchData(): Promise<void> {
       // 获取顶部轮播图
-      getBanner(0).then(({ data }) => {
-        setBanner(
-          data.banners.map((t: IBanner) => ({
-            scm: t.scm,
-            imageUrl: t.imageUrl,
-          })),
-        );
+      const { data } = await getBanner(0);
+      dispatch({
+        type: 'GET_BANNER',
+        payload: data.banners.map((t: IBanner) => ({
+          scm: t.scm,
+          imageUrl: t.imageUrl,
+        })),
       });
-      // 获取歌单分类
-      getCatlistFunc();
-
       // 初始化歌单数据
       getAlbumListFunc();
     }
     fetchData();
-  }, [getAlbumListFunc, getCatlistFunc]);
+  }, [dispatch, getAlbumListFunc]);
+
+  console.log('loading:', loading);
   return (
     <div className={styles.home}>
       <div className={styles.banner}>
@@ -136,32 +159,13 @@ export default (): JSX.Element => {
         </Carousel>
       </div>
       <div className={styles.albumBox}>
-        <div className={styles.head}>
-          <Popover
-            placement="topLeft"
-            visible={showCatList}
-            title={
-              <Button size="small" onClick={() => catSelect('全部')}>
-                全部风格
-              </Button>
-            }
-            content={<CatList catList={catList} selectedCat={cat} onSelect={catSelect} />}
-            trigger="click"
-          >
-            <Button onClick={() => setShowCatList(!showCatList)}>
-              选择风格
-              <IconFont type="icon-up" />
-            </Button>
-          </Popover>
-          <div className={styles.cat}>当前风格：{cat}</div>
-        </div>
+        <Category currentCat={cat} catSelect={catSelect} />
         <div className={styles.list}>
           {albumList.map(album => (
             <Link key={album.id} className={styles.album} to={`/album/${album.id}`}>
               <div className="hoverBox">
                 <div className={styles.cover}>
                   <LazyImage src={album.coverImgUrl} width="100%" height="auto" />
-                  {/* <img src={album.coverImgUrl} /> */}
                   <div className={styles.playCount}>
                     <IconFont type="icon-play-count" style={{ fontSize: 16, marginRight: 2 }} />
                     <span>{album.playCount}</span>
@@ -173,16 +177,15 @@ export default (): JSX.Element => {
             </Link>
           ))}
         </div>
-        <div className={styles.pagination}>
-          <Pagination
-            defaultCurrent={1}
-            current={pageNo}
-            total={totalAlbum}
-            onChange={onPageNoChange}
-            defaultPageSize={LIMIT}
-            showSizeChanger={false}
-          />
-        </div>
+        <Pagination
+          className={styles.pagination}
+          defaultCurrent={1}
+          current={pageNo}
+          total={totalCount}
+          onChange={onPageNoChange}
+          defaultPageSize={LIMIT}
+          showSizeChanger={false}
+        />
       </div>
     </div>
   );

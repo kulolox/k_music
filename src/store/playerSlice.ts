@@ -1,16 +1,6 @@
-import { getSongUrl } from '@/api';
-import { IList } from '@/interfaces';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-
-interface IPlayerDefaultState {
-  currentIndex: number; // 当前播放歌曲
-  currentUrl: string;
-  playing: boolean;
-  loop: boolean;
-  volume: number;
-  playedSeconds: number;
-  list: IList[];
-}
+import { getSongUrl } from '@/api';
+import { IPlayerDefaultState } from '@/interfaces';
 
 const defaultState: IPlayerDefaultState = {
   currentIndex: -1,
@@ -28,12 +18,12 @@ export const getSongUrlById = createAsyncThunk(
   async (data: any, { dispatch }) => {
     // 播放前先关闭播放状态
     dispatch(setPlaying(false))
+    // 重新获取歌曲url
     const res = await getSongUrl(data.id);
-    // 更新状态
-    dispatch(setCurrentUrl({ url: res.data.data[0].url }));
-    dispatch(setCurrentIndex({ index: data.index }));
     return {
       autoPlay: data.autoPlay,
+      index: data.index,
+      url: res.data.data[0].url,
     };
   },
 );
@@ -43,8 +33,11 @@ const playerSlice = createSlice({
   initialState: defaultState,
   extraReducers: builder => {
     builder.addCase(getSongUrlById.fulfilled, (state, action) => {
+      const { index, url, autoPlay } = action.payload
+      state.currentIndex = index
+      state.currentUrl = url
       // 根据传递参数决定是否自动播放
-      state.playing = action.payload.autoPlay;
+      state.playing = autoPlay;
     });
   },
   reducers: {

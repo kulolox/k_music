@@ -5,14 +5,14 @@ import { useDispatch } from 'react-redux';
 import { useLocalStorage } from '@/hooks';
 import { getSongUrlById, setSongList } from './store/playerSlice';
 import './App.css';
-import { IList } from '@/interfaces';
+import { ISong } from '@/interfaces';
 
 const Home = React.lazy(() => import('@pages/home'));
 const Album = React.lazy(() => import('@pages/album'));
 
 function App(): JSX.Element {
   const dispatch = useDispatch();
-  const [data] = useLocalStorage<IList[]>('cache-song-list', null);
+  const [data] = useLocalStorage<ISong[]>('cache-song-list', null);
   // 初始化播放器数据
   useEffect(() => {
     if (data) {

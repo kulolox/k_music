@@ -1,17 +1,17 @@
 import React from 'react';
 import { Tag } from 'antd';
-import { ICatList } from '@pages/home';
+import { ICat } from '@/interfaces';
 import styles from './index.module.less';
 
 interface Iprops {
-  catList: ICatList[];
+  catList: ICat[];
   onSelect: Function;
   selectedCat: string;
 }
 
 const { CheckableTag } = Tag;
 
-const CatList = (props: Iprops) => {
+const List = (props: Iprops) => {
   return (
     <div className={styles.catList}>
       {props.catList.map(cat => (
@@ -35,4 +35,4 @@ const CatList = (props: Iprops) => {
   );
 };
 
-export default CatList;
+export default List;
