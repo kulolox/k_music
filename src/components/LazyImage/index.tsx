@@ -10,6 +10,7 @@ interface IProps {
 
 const LazyImage = (props: IProps) => {
   const [isOnload, setOnload] = useState(false);
+
   useEffect(() => {
     const img = new Image();
     img.src = props.src;
@@ -17,6 +18,7 @@ const LazyImage = (props: IProps) => {
       setOnload(true);
     };
   }, [props.src]);
+
   return (
     <img
       src={isOnload ? props.src : IMAGE_PLACHOLDER}

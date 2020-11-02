@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Carousel, Pagination } from 'antd';
 import { useImmerReducer } from 'use-immer';
@@ -67,41 +67,32 @@ export default (): JSX.Element => {
   const { banners, pageNo, loading, totalCount, cat, albumList } = state;
 
   // 分页变动
-  const onPageNoChange = useCallback(
-    pageIndex => {
-      dispatch({
-        type: 'PAGE_CHANGE',
-        payload: pageIndex,
-      });
-    },
-    [dispatch],
-  );
+  const onPageNoChange = (pageIndex: number) => {
+    dispatch({
+      type: 'PAGE_CHANGE',
+      payload: pageIndex,
+    });
+  };
 
   // 风格切换
-  const catSelect = useCallback(
-    cat => {
-      dispatch({
-        type: 'CAT_SELECT',
-        payload: cat,
-      });
-    },
-    [dispatch],
-  );
+  const catSelect = (cat: string) => {
+    dispatch({
+      type: 'CAT_SELECT',
+      payload: cat,
+    });
+  };
 
   // 获取轮播图
   useEffect(() => {
-    async function fetchData(): Promise<void> {
-      // 获取顶部轮播图
-      const { data } = await getBanner(0);
+    getBanner(0).then(res => {
       dispatch({
         type: 'GET_BANNER',
-        payload: data.banners.map((t: IBanner) => ({
+        payload: res.data.banners.map((t: IBanner) => ({
           scm: t.scm,
           imageUrl: t.imageUrl,
         })),
       });
-    }
-    fetchData();
+    });
   }, [dispatch]);
 
   // 获取专辑列表
@@ -140,7 +131,6 @@ export default (): JSX.Element => {
     fetchData();
   }, [cat, dispatch, pageNo]);
 
-  console.log('loading:', loading);
   return (
     <div className={styles.home}>
       <div className={styles.banner}>

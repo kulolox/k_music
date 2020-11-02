@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button, Badge } from 'antd';
-import classNames from 'classnames'
+import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 import IconFont from '@components/IconFont';
 import ScrollContainer from '@components/ScrollContainer';
@@ -17,9 +17,9 @@ const ListButton = () => {
   const [showContainer, setShowContainer] = useState(false);
   const [lyric, setLyric] = useState('');
 
-  const toggleContainer = useCallback(val => {
-    setShowContainer(val);
-  }, []);
+  const toggleContainer = () => {
+    setShowContainer(!showContainer);
+  };
 
   const play = useCallback(
     id => {
@@ -32,70 +32,68 @@ const ListButton = () => {
   useEffect(() => {
     // 初始化歌词
     setLyric('');
-    // 获取歌词
-    const fetch = async () => {
-      const id = list[currentIndex]?.id;
-      if (id) {
-        const result = await getSongLyric(id);
-        if (result.data.lrc) {
-          setLyric(result.data.lrc.lyric);
-        }
+    const id = list[currentIndex]?.id;
+    if (!list[currentIndex]?.id) return;
+    getSongLyric(id).then(res => {
+      if (res.data.lrc) {
+        setLyric(res.data.lrc.lyric);
       }
-    };
-    fetch();
+    });
   }, [currentIndex, list]);
-  
+
   return (
     <div className={styles.list}>
-      <Badge className={styles.button} count={list.length} overflowCount={99} size="small" offset={[5, 0]}>
-        <Button
-          onClick={() => toggleContainer(!showContainer)}
-          type="text"
-          icon={<IconFont type="icon-music-list" />}
-        />
+      <Badge
+        className={styles.button}
+        count={list.length}
+        overflowCount={99}
+        size="small"
+        offset={[5, 0]}
+      >
+        <Button onClick={toggleContainer} type="text" icon={<IconFont type="icon-music-list" />} />
       </Badge>
-        <div className={classNames(styles.container, { [styles.hide]: !showContainer })}>
-          <div
-            className={styles.backImg}
-            style={{ backgroundImage: `url('${list[currentIndex]?.coverImgUrl}')` }}
-          />
-          <div className={styles.content}>
-            <div className={styles.listBox}>
-              <div className={styles.head}>播放列表</div>
-              <ScrollContainer>
-                {list.map((item, index) => (
-                  <div key={item.id} className={styles.item}>
-                    <div className={styles.index}>{index + 1}</div>
-                    <div className={styles.songName}>{item.name}</div>
-                    <div className={styles.songCreator}>{item.authors}</div>
-                    <div className={styles.second}>
-                      <Duration seconds={item.seconds} />
-                    </div>
-                    <div className={styles.canPlaying}>
-                      <Button
-                        shape="circle"
-                        type="ghost"
-                        size="small"
-                        onClick={() => play(item.id)}
-                        icon={
-                          index === currentIndex && playing ? (
-                            <IconFont type="icon-pause" />
-                          ) : (
-                            <IconFont type="icon-play" />
-                          )
-                        }
-                      />
-                    </div>
+      <div className={classNames(styles.container, { [styles.hide]: !showContainer })}>
+        <div
+          className={styles.backImg}
+          style={{ backgroundImage: `url('${list[currentIndex]?.coverImgUrl}')` }}
+        />
+        <div className={styles.content}>
+          <div className={styles.listBox}>
+            <div className={styles.head}>播放列表</div>
+            <ScrollContainer>
+              {list.map((item, index) => (
+                <div key={item.id} className={styles.item}>
+                  <div className={styles.index}>{index + 1}</div>
+                  <div className={styles.songName}>{item.name}</div>
+                  <div className={styles.songCreator}>{item.authors}</div>
+                  <div className={styles.second}>
+                    <Duration seconds={item.seconds} />
                   </div>
-                ))}
-              </ScrollContainer>
-            </div>
-            <div className={styles.lyricBox}>
-              <div className={styles.head}>歌词</div>
-              {lyric ? <Lyric lyric={lyric} /> : <div className={styles.noLyric}>暂无歌词</div>}
-            </div>
+                  <div className={styles.canPlaying}>
+                    <Button
+                      shape="circle"
+                      type="ghost"
+                      size="small"
+                      onClick={() => play(item.id)}
+                      icon={
+                        index === currentIndex && playing ? (
+                          <IconFont type="icon-pause" />
+                        ) : (
+                          <IconFont type="icon-play" />
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+              ))}
+            </ScrollContainer>
+          </div>
+          <div className={styles.lyricBox}>
+            <div className={styles.head}>歌词</div>
+            {lyric ? <Lyric lyric={lyric} /> : <div className={styles.noLyric}>暂无歌词</div>}
           </div>
         </div>
+      </div>
     </div>
   );
 };

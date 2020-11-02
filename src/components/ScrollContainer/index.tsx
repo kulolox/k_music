@@ -1,6 +1,7 @@
-import React, { ReactNode, useEffect, useRef, useCallback } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import styles from './index.module.less';
+import { useEventListener } from '@/hooks';
 
 interface IProps {
   children: ReactNode;
@@ -9,48 +10,48 @@ interface IProps {
 }
 
 const ScrollContainer = (props: IProps) => {
-  const { className, children, getContainerDom } = props;
-  const [slideBlockStyle, setSlideBlockStyle] = React.useState<object>({});
-  const [hasScrollBar, setHasScrollBar] = React.useState(true);
+  const { children, className, getContainerDom } = props;
+
+  const [slideBlockHeight, setSlideBlockHeight] = useState(0);
+  const [slideBlockTop, setSlideBlockTop] = useState(0);
+  const [hasScrollBar, setHasScrollBar] = useState(false);
   const container = useRef<HTMLDivElement>(null);
 
-  // 解析滚动条
-  const parseDom = useCallback((dom = container.current) => {
-    if (!dom) return;
-    const { clientHeight, scrollHeight, scrollTop } = dom;
-    // 滑块高度
-    const slideBlockHeight = clientHeight ** 2 / scrollHeight;
+  // 计算滚动条位置
+  const handelScroll = (e: Event) => {
+    const { clientHeight, scrollHeight, scrollTop } = e.target as HTMLElement;
     // 滑块距离顶部距离
     const slideBlockTop =
       (scrollTop * (clientHeight - slideBlockHeight)) / (scrollHeight - clientHeight);
+    setSlideBlockTop(slideBlockTop);
+  };
 
-    if (slideBlockTop !== slideBlockTop) {
+  // 计算滚动条高度
+  useEffect(() => {
+    // 子元素未载入
+    if (!props.children) return;
+    // 滚动容器未挂载
+    if (!container.current) return;
+    const { clientHeight, scrollHeight } = container.current;
+    // 当滚动高度等于容器高度，不出滚动条
+    if (scrollHeight === clientHeight) {
       setHasScrollBar(false);
     } else {
+      // 滑块高度
+      const slideBlockHeight = clientHeight ** 2 / scrollHeight;
       setHasScrollBar(true);
-      setSlideBlockStyle({
-        height: slideBlockHeight, // 滑块高度
-        top: slideBlockTop, // 滑块距离顶部距离
-      });
+      setSlideBlockHeight(slideBlockHeight);
     }
-  }, []);
-
-  const handelScroll = React.useCallback(
-    e => {
-      parseDom(e.target);
-    },
-    [parseDom],
-  );
+  }, [props.children]);
 
   useEffect(() => {
-    const containerDom = container.current!;
     // 滚动容器dom传递到父组件
     if (getContainerDom) {
-      getContainerDom(containerDom);
+      getContainerDom(container.current);
     }
-    containerDom.addEventListener('scroll', handelScroll);
-    return () => containerDom.removeEventListener('scroll', handelScroll);
-  }, [getContainerDom, handelScroll]);
+  }, [getContainerDom]);
+
+  useEventListener('scroll', handelScroll, container);
 
   return (
     <div className={classNames(styles.container, className)}>
@@ -59,7 +60,7 @@ const ScrollContainer = (props: IProps) => {
       </div>
       {hasScrollBar && (
         <div className={styles.scrollBar}>
-          <span style={{ ...slideBlockStyle }} />
+          <span style={{ height: slideBlockHeight, top: slideBlockTop }} />
         </div>
       )}
     </div>

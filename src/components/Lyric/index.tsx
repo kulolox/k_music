@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import classNames from 'classnames';
 import { easeCubicInOut } from 'd3-ease';
 import ScrollContainer from '@components/ScrollContainer';
@@ -103,8 +103,6 @@ const Lyric = (props: Iprops) => {
   const formatLyrics = useMemo(() => parseLyric(props.lyric), [props.lyric]);
   // 时间轴
   const timeRange = useMemo(() => formatLyrics.map(lyr => lyr.time), [formatLyrics]);
-  // 歌词渲染dom
-  const lyricDom = useRef<any>(document.getElementsByClassName('lyric'));
   // 当前播放歌词
   const [activeIndex, setActiveIndex] = useState(0);
   // 滚动容器
@@ -117,13 +115,14 @@ const Lyric = (props: Iprops) => {
 
   // 根据当前选中歌词dom,确定滚动
   useEffect(() => {
-    if (lyricDom.current.length > 0) {
-      srcollToActiveLine(container, lyricDom.current[activeIndex]);
+    const lyricDom = document.getElementsByClassName('lyric');
+    if (lyricDom.length > 0) {
+      srcollToActiveLine(container, lyricDom[activeIndex]);
     }
   }, [activeIndex, container]);
 
   return (
-    <ScrollContainer getContainerDom={(ref: HTMLDivElement) => setContainer(ref)}>
+    <ScrollContainer getContainerDom={setContainer}>
       <div className={styles.lyrContainer}>
         {formatLyrics.map((line, index) => (
           <div

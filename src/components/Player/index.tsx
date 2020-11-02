@@ -46,28 +46,26 @@ const Player = () => {
     [dispatch, seeking],
   );
 
-  const onDuration = useCallback(duration => {
+  const onDuration = (duration: number) => {
     setDuration(duration);
-  }, []);
+  };
 
   // 进度条
-  const progressChange = useCallback(val => {
+  const progressChange = (val: number) => {
     setSeeking(true);
     setProgressValue(val);
-  }, []);
-  const progressAfterChange = useCallback(
-    val => {
-      setSeeking(false);
-      setCurrentTime(progressValue);
-    },
-    [progressValue],
-  );
+  };
+  const progressAfterChange = () => {
+    setSeeking(false);
+    setCurrentTime(progressValue);
+  };
 
   // 当切换歌曲时，重置本地播放进度
   useEffect(() => {
     setProgressValue(0);
     setCurrentTime(0);
-    setSeeking(false); // 歌曲自然播完会触发progressChange，而progressAfterChange不一定会触发，所以切换歌曲时人为触发seeking为false,防止onTimeUpdate，本地进度条无法更新
+    // 歌曲自然播完会触发progressChange，而progressAfterChange不一定会触发，所以切换歌曲时人为触发seeking为false,防止onTimeUpdate，本地进度条无法更新
+    setSeeking(false);
   }, [currentIndex]);
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Popover, Button } from 'antd';
 import { getCatlist } from '@/api';
 import IconFont from '@/components/IconFont';
@@ -17,18 +17,14 @@ export default (props: IProps): JSX.Element => {
   // 分类表
   const [catList, setCatList] = useState<ICat[]>([]);
 
-  const onSelect = useCallback(
-    val => {
-      props.catSelect(val);
-      setShowCatList(false);
-    },
-    [props],
-  );
+  const onSelect = (val: string) => {
+    props.catSelect(val);
+    setShowCatList(false);
+  };
 
   useEffect(() => {
-    async function fetchData() {
-      const { data } = await getCatlist();
-      const { categories, sub } = data;
+    getCatlist().then(res => {
+      const { categories, sub } = res.data;
       const list: ICat[] = [];
       Object.keys(categories).forEach(t => {
         list.push({
@@ -38,8 +34,7 @@ export default (props: IProps): JSX.Element => {
         });
       });
       setCatList(list);
-    }
-    fetchData();
+    });
   }, []);
 
   return (

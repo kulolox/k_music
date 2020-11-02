@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Button } from 'antd';
 import IconFont from '@components/IconFont';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,26 +12,23 @@ const Controller = () => {
 
   // 上一曲
   const hasPrevSong = useMemo(() => currentIndex > 0, [currentIndex]);
-  const prevSong = useCallback(() => {
+  const prevSong = () => {
     const index = currentIndex - 1;
     dispatch(getSongUrlById({ id: list[index].id, index, autoPlay: true }));
-  }, [list, currentIndex, dispatch]);
+  };
 
   // 播放暂停
   const hastSong = useMemo(() => list.length > 0, [list]);
-  const togglePlay = useCallback(
-    val => {
-      dispatch(togglePlaying({ playing: val }));
-    },
-    [dispatch],
-  );
+  const togglePlay = () => {
+    dispatch(togglePlaying({ playing: !playing }));
+  };
 
   // 下一曲
   const hasNextSong = useMemo(() => currentIndex < list.length - 1, [currentIndex, list]);
-  const nextSong = useCallback(() => {
+  const nextSong = () => {
     const index = currentIndex + 1;
     dispatch(getSongUrlById({ id: list[index].id, index, autoPlay: true }));
-  }, [list, currentIndex, dispatch]);
+  };
 
   return (
     <div className={styles.controller}>
@@ -47,7 +44,7 @@ const Controller = () => {
       <div className={styles.button}>
         <Button
           disabled={!hastSong}
-          onClick={() => togglePlay(!playing)}
+          onClick={togglePlay}
           shape="circle"
           type="ghost"
           size="large"

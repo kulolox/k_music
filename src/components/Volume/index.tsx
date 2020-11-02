@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Slider, Button } from 'antd';
 import classNames from 'classnames';
 import IconFont from '@components/IconFont';
@@ -14,33 +14,25 @@ const Volume = () => {
 
   const ref = useRef(null);
   const [showVolume, setShowVolume] = useState(false);
+
+  // 他处点击关闭声音调节弹窗
   useOnClickOutside(ref, () => setShowVolume(false));
 
-  const onVolumeChange = useCallback(
-    val => {
-      dispatch(changeVolume({ volume: val }));
-    },
-    [dispatch],
-  );
+  const onVolumeChange = (val: number) => {
+    dispatch(changeVolume({ volume: val }));
+  };
 
-  const toggleVolume = useCallback(val => {
-    setShowVolume(val);
-  }, []);
+  const toggleVolume = () => {
+    setShowVolume(!showVolume);
+  };
 
-  const onVolumeAfterChange = useCallback(
-    val => {
-      toggleVolume(false);
-    },
-    [toggleVolume],
-  );
+  const onVolumeAfterChange = () => {
+    toggleVolume();
+  };
 
   return (
     <div className={styles.volume} ref={ref}>
-      <Button
-        onClick={() => toggleVolume(!showVolume)}
-        type="text"
-        icon={<IconFont type="icon-volume" />}
-      />
+      <Button onClick={toggleVolume} type="text" icon={<IconFont type="icon-volume" />} />
       <div className={classNames(styles.content, { [styles.hide]: !showVolume })}>
         <Slider
           value={volume}

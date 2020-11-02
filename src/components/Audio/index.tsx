@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useEventListener } from '@/hooks';
 
 interface Iprops {
@@ -13,24 +13,18 @@ interface Iprops {
 
 const Audio = (props: Iprops) => {
   const RPlayer = useRef<HTMLAudioElement>(null);
-  const onTimeUpdate = useCallback(
-    () => {
-      props.onTimeUpdate(RPlayer.current!.currentTime)
-    },
-    [props],
-  )
-  const onDuration = useCallback(
-    () => {
-      props.onDuration(RPlayer.current!.duration )
-    },
-    [props],
-  )
-  const onEnded = useCallback(
-    () => {
-      props.onEnded()
-    },
-    [props],
-  )
+
+  const onTimeUpdate = () => {
+    props.onTimeUpdate(RPlayer.current!.currentTime);
+  };
+
+  const onDuration = () => {
+    props.onDuration(RPlayer.current!.duration);
+  };
+
+  const onEnded = () => {
+    props.onEnded();
+  };
 
   // 根据播放状态及当前歌曲切换播放暂停
   useEffect(() => {
@@ -45,18 +39,17 @@ const Audio = (props: Iprops) => {
   useEffect(() => {
     RPlayer.current!.volume = props.volume / 100;
   }, [props.volume]);
-  
+
   // 进度
   useEffect(() => {
     RPlayer.current!.currentTime = props.currentTime;
   }, [props.currentTime]);
 
-  useEventListener('timeupdate', onTimeUpdate, RPlayer)
-  useEventListener('ended', onEnded, RPlayer)
-  useEventListener('durationchange', onDuration, RPlayer)
-  return (
-    <audio ref={RPlayer} src={props.src} preload="auto" />
-  );
+  useEventListener('timeupdate', onTimeUpdate, RPlayer);
+  useEventListener('ended', onEnded, RPlayer);
+  useEventListener('durationchange', onDuration, RPlayer);
+
+  return <audio ref={RPlayer} src={props.src} preload="auto" />;
 };
 
 export default Audio;
