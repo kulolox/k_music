@@ -46,15 +46,15 @@ const Player = () => {
     [dispatch, seeking],
   );
 
-  const onDuration = (duration: number) => {
+  const onDuration = useCallback((duration: number) => {
     setDuration(duration);
-  };
+  }, []);
 
   // 进度条
-  const progressChange = (val: number) => {
+  const progressChange = useCallback((val: number) => {
     setSeeking(true);
     setProgressValue(val);
-  };
+  }, []);
   const progressAfterChange = () => {
     setSeeking(false);
     setCurrentTime(progressValue);

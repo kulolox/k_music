@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { useEventListener } from '@/hooks';
 
 interface Iprops {
@@ -14,17 +14,17 @@ interface Iprops {
 const Audio = (props: Iprops) => {
   const RPlayer = useRef<HTMLAudioElement>(null);
 
-  const onTimeUpdate = () => {
+  const onTimeUpdate = useCallback(() => {
     props.onTimeUpdate(RPlayer.current!.currentTime);
-  };
+  }, [props]);
 
-  const onDuration = () => {
+  const onDuration = useCallback(() => {
     props.onDuration(RPlayer.current!.duration);
-  };
+  }, [props]);
 
-  const onEnded = () => {
+  const onEnded = useCallback(() => {
     props.onEnded();
-  };
+  }, [props]);
 
   // 根据播放状态及当前歌曲切换播放暂停
   useEffect(() => {

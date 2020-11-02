@@ -185,12 +185,10 @@ const Album = () => {
                   <div className={styles.item}>
                     <div className={styles.index}>{index + 1}</div>
                     <div className={styles.song}>
-                      <div className={styles.songTitle}>
-                        <LazyImage border src={item.coverImgUrl} width="36px" height="36px" />
-                        <div className={styles.songName}>{item.name}</div>
-                      </div>
-                      <div className={styles.songCreator}>{item.authors}</div>
+                      <LazyImage border src={item.coverImgUrl} width="36px" height="36px" />
+                      <div className={styles.songName}>{item.name}</div>
                     </div>
+                    <div className={styles.songCreator}>{item.authors}</div>
                     <div className={styles.second}>
                       <Duration seconds={item.seconds} />
                     </div>

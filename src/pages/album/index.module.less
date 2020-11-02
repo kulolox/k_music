@@ -58,7 +58,7 @@
       justify-content: space-between;
       align-items: center;
       .index {
-        width: 60px;
+        width: 40px;
         text-align: center;
         margin-right: 16px;
       }
@@ -66,21 +66,26 @@
         flex: 1;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        .songTitle {
-          display: flex;
-          align-items: center;
-          .songName {
-            margin-left: 16px;
-            font-size: 16px;
-            color: #333;
-          }
+        .songName {
+          flex: 1;
+          width: 0;
+          margin-left: 16px;
+          font-size: 16px;
+          color: #333;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
-
-        .songCreator {
-          font-size: 12px;
-          color: #999;
-        }
+      }
+      .songCreator {
+        font-size: 12px;
+        color: #999;
+        width: 240px;
+        text-align: right;
+        padding: 0 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .second {
         padding: 0 16px;
