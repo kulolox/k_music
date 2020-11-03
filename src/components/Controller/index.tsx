@@ -30,6 +30,8 @@ const Controller = () => {
     dispatch(getSongUrlById({ id: list[index].id, index, autoPlay: true }));
   };
 
+  console.log('contriller render');
+
   return (
     <div className={styles.controller}>
       <div className={styles.button}>

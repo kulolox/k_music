@@ -98,7 +98,7 @@ interface Iprops {
 }
 
 const Lyric = (props: Iprops) => {
-  const { playedSeconds } = useSelector((state: RootState) => state.player);
+  const { currentTime } = useSelector((state: RootState) => state.player);
   // 歌词解析时间轴数据
   const formatLyrics = useMemo(() => parseLyric(props.lyric), [props.lyric]);
   // 时间轴
@@ -110,8 +110,8 @@ const Lyric = (props: Iprops) => {
 
   // 根据播放进度，确定当前歌词
   useEffect(() => {
-    setActiveIndex(getTimeIndex(playedSeconds, timeRange));
-  }, [playedSeconds, timeRange]);
+    setActiveIndex(getTimeIndex(currentTime, timeRange));
+  }, [currentTime, timeRange]);
 
   // 根据当前选中歌词dom,确定滚动
   useEffect(() => {

@@ -41,6 +41,8 @@ const ListButton = () => {
     });
   }, [currentIndex, list]);
 
+  console.log('list render');
+
   return (
     <div className={styles.list}>
       <Badge
@@ -98,4 +100,4 @@ const ListButton = () => {
   );
 };
 
-export default ListButton;
+export default React.memo(ListButton);

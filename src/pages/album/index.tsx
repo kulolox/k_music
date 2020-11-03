@@ -41,6 +41,7 @@ const Album = () => {
   // 获取路由相关数据与方法
   const router: any = useRouter();
   const [loading, setLoading] = useState(false);
+  const [isNew, setIsNew] = useState(true); // 是否是未缓存过的歌单
 
   // 播放列表缓存
   const setcacheList = useLocalStorage<ISong[]>('cache-song-list', null)[1];
@@ -51,7 +52,10 @@ const Album = () => {
 
   useEffect(() => {
     // 如果缓存有数据，则不走请求逻辑
-    if (album && album.list.length > 0) return;
+    if (album && album.list.length > 0) {
+      setIsNew(false); // 有缓存
+      return;
+    }
     async function getAlbum() {
       setLoading(true);
       const {
@@ -102,40 +106,45 @@ const Album = () => {
         const urlRequests = albumData.list.map(t => getSongUrl(t.id));
         const urlResults = await Promise.all(urlRequests);
         albumData.list.map((t, index) => (t.url = urlResults[index].data.data[0].url));
-        setAlbum(albumData);
+        setAlbum(albumData); // 缓存专辑
+        setcacheList(albumData.list.filter(t => t.url)); // 缓存可播放歌曲
       } finally {
         setLoading(false);
       }
     }
     getAlbum();
-  }, [album, router.query.id, setAlbum]);
+  }, [album, router.query.id, setAlbum, setcacheList]);
 
   // 载入当前歌单可播放歌曲
   const initData = useCallback(() => {
-    // 更新可播放歌曲列表缓存
-    setcacheList(canPlayList);
-    dispatch(setSongList({ data: canPlayList }));
+    if (isNew) {
+      // 更新可播放歌曲列表
+      dispatch(setSongList({ data: canPlayList }));
+    }
     dispatch(getSongUrlById({ id: canPlayList[0].id, index: 0, autoPlay: false }));
-  }, [canPlayList, dispatch, setcacheList]);
+  }, [canPlayList, dispatch, isNew]);
 
   // 播放
   const playSong = useCallback(() => {
-    setcacheList(canPlayList);
-    dispatch(setSongList({ data: canPlayList }));
+    if (isNew) {
+      dispatch(setSongList({ data: canPlayList }));
+    }
     dispatch(getSongUrlById({ id: canPlayList[0].id, index: 0, autoPlay: true }));
-  }, [setcacheList, canPlayList, dispatch]);
+  }, [isNew, canPlayList, dispatch]);
 
   const playSongById = useCallback(
     id => {
-      // 载入数据
-      setcacheList(canPlayList);
-      dispatch(setSongList({ data: canPlayList }));
       // 根据id播放
       const index = canPlayList.findIndex(t => t.id === id);
+      if (index < 0) {
+        dispatch(setSongList({ data: canPlayList }));
+      }
       dispatch(getSongUrlById({ id, index, autoPlay: true }));
     },
-    [setcacheList, canPlayList, dispatch],
+    [canPlayList, dispatch],
   );
+
+  console.log('album render');
 
   return (
     <div className={styles.album}>

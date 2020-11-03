@@ -58,6 +58,6 @@ export interface IPlayerDefaultState {
   playing: boolean;
   loop: boolean;
   volume: number;
-  playedSeconds: number;
+  currentTime: number; // 当前播放进度
   list: ISong[];
 }

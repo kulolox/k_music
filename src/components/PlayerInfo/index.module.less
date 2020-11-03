@@ -1,0 +1,29 @@
+@import '~@/css/animation.less';
+.info {
+  padding: 0 16px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  .coverImage {
+    margin-right: 8px;
+    background: #dcdcdc;
+  }
+  .spin {
+    animation: rotate 2s linear infinite;
+  }
+  .content {
+    flex: 1;
+    .head {
+      display: flex;
+      justify-content: space-between;
+      color: #fff;
+    }
+    .progress {
+      :global {
+        .ant-slider {
+          margin: 4px;
+        }
+      }
+    }
+  }
+}

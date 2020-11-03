@@ -6,24 +6,30 @@ interface Iprops {
   playing: Boolean;
   currentTime: number;
   volume: number;
-  onTimeUpdate: Function;
-  onEnded: Function;
-  onDuration: Function;
+  onTimeUpdate?: Function;
+  onEnded?: Function;
+  onDuration?: Function;
 }
 
 const Audio = (props: Iprops) => {
   const RPlayer = useRef<HTMLAudioElement>(null);
 
   const onTimeUpdate = useCallback(() => {
-    props.onTimeUpdate(RPlayer.current!.currentTime);
+    if (props.onTimeUpdate) {
+      props.onTimeUpdate(RPlayer.current!.currentTime);
+    }
   }, [props]);
 
   const onDuration = useCallback(() => {
-    props.onDuration(RPlayer.current!.duration);
+    if (props.onDuration) {
+      props.onDuration!(RPlayer.current!.duration);
+    }
   }, [props]);
 
   const onEnded = useCallback(() => {
-    props.onEnded();
+    if (props.onEnded) {
+      props.onEnded();
+    }
   }, [props]);
 
   // 根据播放状态及当前歌曲切换播放暂停
