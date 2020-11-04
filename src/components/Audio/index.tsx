@@ -4,7 +4,7 @@ import { useEventListener } from '@/hooks';
 interface Iprops {
   src: string;
   playing: Boolean;
-  currentTime: number;
+  seekToTime: number;
   volume: number;
   onTimeUpdate?: Function;
   onEnded?: Function;
@@ -48,8 +48,8 @@ const Audio = (props: Iprops) => {
 
   // 进度
   useEffect(() => {
-    RPlayer.current!.currentTime = props.currentTime;
-  }, [props.currentTime]);
+    RPlayer.current!.currentTime = props.seekToTime;
+  }, [props.seekToTime]);
 
   useEventListener('timeupdate', onTimeUpdate, RPlayer);
   useEventListener('ended', onEnded, RPlayer);

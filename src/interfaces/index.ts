@@ -58,6 +58,7 @@ export interface IPlayerDefaultState {
   playing: boolean;
   loop: boolean;
   volume: number;
-  currentTime: number; // 当前播放进度
+  currentTime: number; // 播放进度，用于歌词滚动
+  seekToTime: number; // 用于进度跳转
   list: ISong[];
 }

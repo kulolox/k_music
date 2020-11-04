@@ -3,7 +3,7 @@ import { Avatar, Slider } from 'antd';
 import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/rootReducer';
-import { setCurrentTime } from '@/store/playerSlice';
+import { setSeekToTime } from '@/store/playerSlice';
 import Duration from '@components/Duration';
 import styles from './index.module.less';
 
@@ -16,7 +16,7 @@ const PlayerInfo = () => {
   const dispatch = useDispatch();
 
   const [seeking, setSeeking] = useState(false);
-  const [progressValue, setProgressValue] = useState(0);
+  const [progressValue, setProgressValue] = useState(0); // 进度条进度
 
   // 进度条
   const progressChange = useCallback((val: number) => {
@@ -26,11 +26,11 @@ const PlayerInfo = () => {
   }, []);
 
   const progressAfterChange = () => {
-    // 操作完成，将本地进度同步到播放器
     setSeeking(false);
+    // 拖动完成，更新要跳转的位置
     dispatch(
-      setCurrentTime({
-        currentTime: progressValue,
+      setSeekToTime({
+        seekToTime: progressValue,
       }),
     );
   };
@@ -39,8 +39,8 @@ const PlayerInfo = () => {
   useEffect(() => {
     // 重置当前播放进度，进度条进度，操作状态
     dispatch(
-      setCurrentTime({
-        currentTime: 0,
+      setSeekToTime({
+        seekToTime: 0,
       }),
     );
     setProgressValue(0);
@@ -48,7 +48,7 @@ const PlayerInfo = () => {
   }, [currentIndex, dispatch]);
 
   useEffect(() => {
-    // 如果未操作进度条，则同步播放进度
+    // 如果未操作进度条，currentTime 与 progressValue同步
     if (!seeking) {
       setProgressValue(currentTime);
     }

@@ -10,7 +10,7 @@ import Controller from '@/components/Controller';
 import PlayerInfo from '../PlayerInfo';
 
 const Player = () => {
-  const { currentIndex, currentUrl, list, playing, volume, currentTime } = useSelector(
+  const { currentIndex, currentUrl, list, playing, volume, seekToTime } = useSelector(
     (state: RootState) => state.player,
   );
   const dispatch = useDispatch();
@@ -40,7 +40,7 @@ const Player = () => {
         src={currentUrl}
         playing={playing}
         volume={volume}
-        currentTime={currentTime}
+        seekToTime={seekToTime}
         onEnded={onEnded}
         onTimeUpdate={onTimeUpdate}
       />

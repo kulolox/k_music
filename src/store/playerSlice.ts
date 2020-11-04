@@ -9,6 +9,7 @@ const defaultState: IPlayerDefaultState = {
   loop: false,
   volume: 60,
   currentTime: 0,
+  seekToTime: 0,
   list: [],
 };
 
@@ -51,6 +52,9 @@ const playerSlice = createSlice({
     setCurrentTime: (state, action) => {
       state.currentTime = action.payload.currentTime;
     },
+    setSeekToTime: (state, action) => {
+      state.seekToTime = action.payload.seekToTime;
+    },
     setPlaying: (state, action) => {
       state.playing = action.payload.playing;
     },
@@ -75,6 +79,7 @@ export const {
   togglePlaying,
   setPlaying,
   setCurrentTime,
+  setSeekToTime,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;
