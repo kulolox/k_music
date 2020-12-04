@@ -11,10 +11,26 @@ import '@/css/animation.less';
 import styles from './index.module.less';
 import Loadinger from '@/components/Loadinger';
 
+interface IState {
+  banners: IBanner[];
+  pageNo: number;
+  loading: boolean;
+  totalCount: number;
+  cat: string;
+  albumList: IAblum[];
+}
 const LIMIT = 35;
 
+const initalState: IState = {
+  banners: [],
+  pageNo: 1,
+  loading: false,
+  totalCount: 0,
+  cat: '华语',
+  albumList: [],
+};
 // userReducer 整个多个state
-function homeReducer(state: any, action: any) {
+function homeReducer(state: IState, action: any) {
   switch (action.type) {
     case 'GET_BANNER': {
       state.banners = action.payload;
@@ -43,24 +59,6 @@ function homeReducer(state: any, action: any) {
       return;
   }
 }
-
-interface IState {
-  banners: IBanner[];
-  pageNo: number;
-  loading: boolean;
-  totalCount: number;
-  cat: string;
-  albumList: IAblum[];
-}
-
-const initalState: IState = {
-  banners: [],
-  pageNo: 1,
-  loading: false,
-  totalCount: 0,
-  cat: '华语',
-  albumList: [],
-};
 
 export default (): JSX.Element => {
   const [state, dispatch] = useImmerReducer(homeReducer, initalState);
@@ -135,7 +133,7 @@ export default (): JSX.Element => {
     <div className={styles.home}>
       <div className={styles.banner}>
         <Carousel autoplay>
-          {(banners as IBanner[]).map(banner => (
+          {banners.map(banner => (
             <div key={banner.scm} className={styles.item}>
               <img src={banner.imageUrl} alt="" />
             </div>

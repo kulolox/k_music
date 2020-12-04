@@ -32,8 +32,6 @@ const Player = () => {
     [dispatch],
   );
 
-  console.log('player render');
-
   return (
     <div className={styles.player}>
       <Audio

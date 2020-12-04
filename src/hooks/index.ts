@@ -137,8 +137,6 @@ export function useOnClickOutside<T extends HTMLElement = HTMLDivElement>(ref:Re
   );
 }
 
-
-
 // debug用hook
 export function useWhyDidYouUpdate(name: string, props:any) {
   // Get a mutable ref object where we can store props ...

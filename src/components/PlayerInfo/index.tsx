@@ -3,7 +3,7 @@ import { Avatar, Slider } from 'antd';
 import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/rootReducer';
-import { setSeekToTime } from '@/store/playerSlice';
+import { setCurrentTime, setSeekToTime } from '@/store/playerSlice';
 import Duration from '@components/Duration';
 import styles from './index.module.less';
 
@@ -39,8 +39,8 @@ const PlayerInfo = () => {
   useEffect(() => {
     // 重置当前播放进度，进度条进度，操作状态
     dispatch(
-      setSeekToTime({
-        seekToTime: 0,
+      setCurrentTime({
+        currentTime: 0,
       }),
     );
     setProgressValue(0);
