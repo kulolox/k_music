@@ -8,7 +8,7 @@ import { useLocalStorage, useRouter } from '@/hooks';
 import { arraySplit, checkMusic } from '@/utils/tool';
 import Duration from '@/components/Duration';
 import { getSongUrlById, setSongList } from '@/store/playerSlice';
-import { IAlbumDetail, cacheAlbum } from '@/interfaces';
+import { IAlbumDetail, ISong } from '@/interfaces';
 import styles from './index.module.less';
 import LazyImage from '@/components/LazyImage';
 import Loadinger from '@/components/Loadinger';
@@ -41,25 +41,14 @@ const Album = () => {
   // 获取路由相关数据与方法
   const router: any = useRouter();
   const [loading, setLoading] = useState(false);
-  const [isNew, setIsNew] = useState(true); // 是否是未缓存过的歌单
 
   // 播放列表缓存
-  const [cacheAlbumSong, setcacheList] = useLocalStorage<cacheAlbum>('cache-song-list', null);
+  const setcacheList = useLocalStorage<ISong[]>('cache-song-list', null)[1];
 
   // 专辑信息列表缓存
   const [album, setAlbum] = useLocalStorage(router.query.id, initState);
 
   const canPlayList = useMemo(() => album.list.filter(t => t.url), [album.list]);
-
-  useEffect(() => {
-    if (
-      cacheAlbumSong &&
-      cacheAlbumSong.albumId === router.query.id &&
-      cacheAlbumSong.list.length > 0
-    ) {
-      setIsNew(false); // 播放列表缓存与当前专辑一致
-    }
-  }, [cacheAlbumSong, router.query.id]);
 
   useEffect(() => {
     // 如果缓存有数据，则不走请求逻辑
@@ -117,7 +106,7 @@ const Album = () => {
         const urlResults = await Promise.all(urlRequests);
         albumData.list.map((t, index) => (t.url = urlResults[index].data.data[0].url));
         setAlbum(albumData); // 缓存专辑
-        setcacheList({ list: albumData.list.filter(t => t.url), albumId: router.query.id }); // 缓存可播放歌曲
+        setcacheList(albumData.list.filter(t => t.url)); // 缓存可播放歌曲
       } finally {
         setLoading(false);
       }
@@ -127,20 +116,16 @@ const Album = () => {
 
   // 载入当前歌单可播放歌曲
   const initData = useCallback(() => {
-    if (isNew) {
-      // 更新可播放歌曲列表
-      dispatch(setSongList({ data: canPlayList }));
-    }
+    // 更新可播放歌曲列表
+    dispatch(setSongList({ data: canPlayList }));
     dispatch(getSongUrlById({ id: canPlayList[0].id, index: 0, autoPlay: false }));
-  }, [canPlayList, dispatch, isNew]);
+  }, [canPlayList, dispatch]);
 
   // 播放
   const playSong = useCallback(() => {
-    if (isNew) {
-      dispatch(setSongList({ data: canPlayList }));
-    }
+    dispatch(setSongList({ data: canPlayList }));
     dispatch(getSongUrlById({ id: canPlayList[0].id, index: 0, autoPlay: true }));
-  }, [isNew, canPlayList, dispatch]);
+  }, [canPlayList, dispatch]);
 
   const playSongById = useCallback(
     id => {
