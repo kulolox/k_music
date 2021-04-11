@@ -52,7 +52,11 @@ const Album = () => {
   const canPlayList = useMemo(() => album.list.filter(t => t.url), [album.list]);
 
   useEffect(() => {
-    if (cacheAlbumSong.albumId === router.query.id && cacheAlbumSong.list.length > 0) {
+    if (
+      cacheAlbumSong &&
+      cacheAlbumSong.albumId === router.query.id &&
+      cacheAlbumSong.list.length > 0
+    ) {
       setIsNew(false); // 播放列表缓存与当前专辑一致
     }
   }, [cacheAlbumSong, router.query.id]);
