@@ -8,7 +8,7 @@ import { useLocalStorage, useRouter } from '@/hooks';
 import { arraySplit, checkMusic } from '@/utils/tool';
 import Duration from '@/components/Duration';
 import { getSongUrlById, setSongList } from '@/store/playerSlice';
-import { ISong, IAlbumDetail } from '@/interfaces';
+import { IAlbumDetail, cacheAlbum } from '@/interfaces';
 import styles from './index.module.less';
 import LazyImage from '@/components/LazyImage';
 import Loadinger from '@/components/Loadinger';
@@ -44,16 +44,22 @@ const Album = () => {
   const [isNew, setIsNew] = useState(true); // 是否是未缓存过的歌单
 
   // 播放列表缓存
-  const setcacheList = useLocalStorage<ISong[]>('cache-song-list', null)[1];
-  // 专辑信息列表
+  const [cacheAlbumSong, setcacheList] = useLocalStorage<cacheAlbum>('cache-song-list', null);
+
+  // 专辑信息列表缓存
   const [album, setAlbum] = useLocalStorage(router.query.id, initState);
 
   const canPlayList = useMemo(() => album.list.filter(t => t.url), [album.list]);
 
   useEffect(() => {
+    if (cacheAlbumSong.albumId === router.query.id && cacheAlbumSong.list.length > 0) {
+      setIsNew(false); // 播放列表缓存与当前专辑一致
+    }
+  }, [cacheAlbumSong, router.query.id]);
+
+  useEffect(() => {
     // 如果缓存有数据，则不走请求逻辑
     if (album && album.list.length > 0) {
-      setIsNew(false); // 有缓存
       return;
     }
     async function getAlbum() {
@@ -107,7 +113,7 @@ const Album = () => {
         const urlResults = await Promise.all(urlRequests);
         albumData.list.map((t, index) => (t.url = urlResults[index].data.data[0].url));
         setAlbum(albumData); // 缓存专辑
-        setcacheList(albumData.list.filter(t => t.url)); // 缓存可播放歌曲
+        setcacheList({ list: albumData.list.filter(t => t.url), albumId: router.query.id }); // 缓存可播放歌曲
       } finally {
         setLoading(false);
       }

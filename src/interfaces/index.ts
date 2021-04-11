@@ -45,6 +45,12 @@ export interface ISong{
   url: string | null;
 }
 
+// 缓存的可播放歌单
+export interface cacheAlbum {
+  albumId: string;
+  list: ISong[];
+}
+
 // 专辑详情
 export interface IAlbumDetail {
   info: IInfo;
