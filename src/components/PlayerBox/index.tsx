@@ -14,9 +14,7 @@ const PlayerBox = () => {
       <div className={styles.lockBox} onClick={toggltLock}>
         <IconFont type={isLock ? 'icon-lock_fill' : 'icon-unlock_fill'} />
       </div>
-      <div className={styles.player}>
-        <Player />
-      </div>
+      <Player />
     </div>
   );
 };

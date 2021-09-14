@@ -30,6 +30,8 @@ const Volume = () => {
     toggleVolume();
   };
 
+  console.log('Volume render');
+
   return (
     <div className={styles.volume} ref={ref}>
       <Button onClick={toggleVolume} type="text" icon={<IconFont type="icon-volume" />} />

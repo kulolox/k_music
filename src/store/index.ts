@@ -5,9 +5,7 @@ import rootReducer from './rootReducer';
 
 const middleware = getDefaultMiddleware({
   serializableCheck: false,
-  // serializableCheck: {
-  //   ignoredActions: ['player/setAudio'], // redux推荐只将可序列化的数据存入store，该配置忽略了该规则，因为我们需要全局共享audio实例
-  // },
+  immutableCheck: false,
 })
 
 // 开发模式添加logger插件

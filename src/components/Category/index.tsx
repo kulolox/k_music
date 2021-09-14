@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Popover, Button } from 'antd';
 import { getCatlist } from '@/api';
 import IconFont from '@/components/IconFont';
@@ -13,14 +13,18 @@ interface IProps {
 }
 
 export default (props: IProps): JSX.Element => {
+  const { catSelect } = props;
   const [showCatList, setShowCatList] = useState(false);
   // 分类表
   const [catList, setCatList] = useState<ICat[]>([]);
 
-  const onSelect = (val: string) => {
-    props.catSelect(val);
-    setShowCatList(false);
-  };
+  const onSelect = useCallback(
+    (val: string) => {
+      catSelect(val);
+      setShowCatList(false);
+    },
+    [catSelect],
+  );
 
   useEffect(() => {
     getCatlist().then(res => {

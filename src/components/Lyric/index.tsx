@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import classNames from 'classnames';
 import { easeCubicInOut } from 'd3-ease';
+import throttle from 'lodash/throttle';
 import ScrollContainer from '@components/ScrollContainer';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/rootReducer';
@@ -47,7 +48,7 @@ const getTimeIndex = (time: number, range: number[]) => {
   const len = range.length;
   if (time <= range[0]) return 0;
   if (time >= range[len - 1]) return len - 1;
-  let index = 0;
+  let index: number = 0;
   for (const t of range) {
     if (t > time) {
       index = range.indexOf(t) - 1;
@@ -108,10 +109,15 @@ const Lyric = (props: Iprops) => {
   // 滚动容器
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
 
+  const throttleIndex = useCallback(
+    throttle(() => getTimeIndex(currentTime, timeRange), 1000),
+    [currentTime, timeRange],
+  );
+
   // 根据播放进度，确定当前歌词
   useEffect(() => {
-    setActiveIndex(getTimeIndex(currentTime, timeRange));
-  }, [currentTime, timeRange]);
+    setActiveIndex(throttleIndex() as number);
+  }, [throttleIndex]);
 
   // 根据当前选中歌词dom,确定滚动
   useEffect(() => {
@@ -139,4 +145,4 @@ const Lyric = (props: Iprops) => {
   );
 };
 
-export default Lyric;
+export default React.memo(Lyric);

@@ -1,61 +1,59 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { useEventListener } from '@/hooks';
+import { getSongUrlById, setPlaying, setCurrentTime } from '@/store/playerSlice';
+import { RootState } from '@/store/rootReducer';
 
-interface Iprops {
-  src: string;
-  playing: Boolean;
-  seekToTime: number;
-  volume: number;
-  onTimeUpdate?: Function;
-  onEnded?: Function;
-  onDuration?: Function;
-}
+const Audio = () => {
+  const { currentIndex, currentUrl, list, playing, volume, seekToTime } = useSelector(
+    (state: RootState) => state.player,
+  );
+  const dispatch = useDispatch();
 
-const Audio = (props: Iprops) => {
   const RPlayer = useRef<HTMLAudioElement>(null);
 
-  const onTimeUpdate = useCallback(() => {
-    if (props.onTimeUpdate) {
-      props.onTimeUpdate(RPlayer.current!.currentTime);
-    }
-  }, [props]);
+  const onTimeUpdate = () => {
+    dispatch(setCurrentTime({ currentTime: RPlayer.current!.currentTime }));
+  };
 
-  const onDuration = useCallback(() => {
-    if (props.onDuration) {
-      props.onDuration!(RPlayer.current!.duration);
-    }
-  }, [props]);
+  const onDuration = () => {
+    console.log('onDuration');
+  };
 
-  const onEnded = useCallback(() => {
-    if (props.onEnded) {
-      props.onEnded();
+  const onEnded = () => {
+    if (currentIndex < list.length - 1) {
+      const index = currentIndex + 1;
+      dispatch(getSongUrlById({ id: list[index].id, index, autoPlay: true }));
+    } else {
+      dispatch(setPlaying({ playing: false }));
     }
-  }, [props]);
+  };
 
   // 根据播放状态及当前歌曲切换播放暂停
   useEffect(() => {
-    if (props.playing) {
+    if (playing) {
       RPlayer.current!.play();
     } else {
       RPlayer.current!.pause();
     }
-  }, [props.playing]);
+  }, [playing]);
 
   // 音量控制
   useEffect(() => {
-    RPlayer.current!.volume = props.volume / 100;
-  }, [props.volume]);
+    RPlayer.current!.volume = volume / 100;
+  }, [volume]);
 
   // 进度
   useEffect(() => {
-    RPlayer.current!.currentTime = props.seekToTime;
-  }, [props.seekToTime]);
+    RPlayer.current!.currentTime = seekToTime;
+  }, [seekToTime]);
 
   useEventListener('timeupdate', onTimeUpdate, RPlayer);
   useEventListener('ended', onEnded, RPlayer);
   useEventListener('durationchange', onDuration, RPlayer);
 
-  return <audio ref={RPlayer} src={props.src} preload="auto" />;
+  return <audio ref={RPlayer} src={currentUrl} preload="auto" />;
 };
 
 export default Audio;

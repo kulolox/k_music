@@ -1,7 +1,4 @@
-import React, { useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@/store/rootReducer';
-import { getSongUrlById, setPlaying, setCurrentTime } from '@/store/playerSlice';
+import React from 'react';
 import Volume from '@components/Volume';
 import ListButton from '@components/ListButton';
 import styles from './index.module.less';
@@ -10,38 +7,9 @@ import Controller from '@/components/Controller';
 import PlayerInfo from '../PlayerInfo';
 
 const Player = () => {
-  const { currentIndex, currentUrl, list, playing, volume, seekToTime } = useSelector(
-    (state: RootState) => state.player,
-  );
-  const dispatch = useDispatch();
-
-  const onEnded = useCallback(() => {
-    if (currentIndex < list.length - 1) {
-      const index = currentIndex + 1;
-      dispatch(getSongUrlById({ id: list[index].id, index, autoPlay: true }));
-    } else {
-      dispatch(setPlaying({ playing: false }));
-    }
-  }, [list, currentIndex, dispatch]);
-
-  // audio ontimeupdate事件每隔250ms触发一次
-  const onTimeUpdate = useCallback(
-    time => {
-      dispatch(setCurrentTime({ currentTime: time }));
-    },
-    [dispatch],
-  );
-
   return (
     <div className={styles.player}>
-      <Audio
-        src={currentUrl}
-        playing={playing}
-        volume={volume}
-        seekToTime={seekToTime}
-        onEnded={onEnded}
-        onTimeUpdate={onTimeUpdate}
-      />
+      <Audio />
       <div className={styles.audio}>
         <Controller />
         <PlayerInfo />
