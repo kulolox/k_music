@@ -1,5 +1,5 @@
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-import logger from 'redux-logger';
+// import logger from 'redux-logger';
 import { useDispatch } from 'react-redux';
 import rootReducer from './rootReducer';
 
@@ -11,9 +11,9 @@ const middleware = getDefaultMiddleware({
 })
 
 // 开发模式添加logger插件
-if (process.env.NODE_ENV !== 'production') {
-  middleware.push(logger)
-}
+// if (process.env.NODE_ENV !== 'production') {
+//   middleware.push(logger)
+// }
 
 const store = configureStore({
   reducer: rootReducer,

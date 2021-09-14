@@ -41,8 +41,6 @@ const ListButton = () => {
     });
   }, [currentIndex, list]);
 
-  console.log('list render');
-
   return (
     <div className={styles.list}>
       <Badge

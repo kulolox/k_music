@@ -1,6 +1,6 @@
 import request from './request';
 import { AxiosResponse } from 'axios';
-const baseUrl = 'https://api.xujianfeng.club';
+const baseUrl = 'http://localhost:4000';
 
 /**
  * 获取首页轮播图
